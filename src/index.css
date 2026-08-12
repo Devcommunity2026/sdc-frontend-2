@@ -1,197 +1,364 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 22px;
+@theme {
+  /* ================= DARK COLORS ================= */
+  --color-dark-background: hsl(222 47% 6%);
+  --color-dark-foreground: hsl(213 31% 91%);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  --color-dark-card: hsl(222 44% 9%);
+  --color-dark-card-foreground: hsl(213 31% 91%);
 
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+  --color-dark-muted: hsl(223 36% 14%);
+  --color-dark-muted-foreground: hsl(215 16% 52%);
+
+  --color-dark-primary: hsl(217 91% 60%);
+  --color-dark-primary-foreground: hsl(222 47% 6%);
+
+  --color-dark-secondary: hsl(222 40% 13%);
+  --color-dark-secondary-foreground: hsl(213 27% 82%);
+
+  --color-dark-accent: hsl(199 89% 48%);
+  --color-dark-accent-foreground: hsl(213 31% 95%);
+
+  --color-dark-border: hsl(223 32% 16%);
+  --color-dark-input: hsl(223 32% 16%);
+  --color-dark-ring: hsl(217 91% 60%);
+
+  /* ================= LIGHT COLORS ================= */
+  --color-background: hsl(210 40% 98%);
+  --color-foreground: hsl(222 47% 11%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222 47% 11%);
+
+  --color-muted: hsl(210 40% 93%);
+  --color-muted-foreground: hsl(215 16% 40%);
+
+  --color-primary: hsl(217 91% 55%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary: hsl(210 40% 93%);
+  --color-secondary-foreground: hsl(222 40% 25%);
+
+  --color-accent: hsl(199 89% 42%);
+  --color-accent-foreground: hsl(0 0% 100%);
+
+  --color-border: hsl(214 32% 88%);
+  --color-input: hsl(214 32% 88%);
+  --color-ring: hsl(217 91% 55%);
+
+  /* ================= UTILITY COLORS ================= */
+  --color-success: hsl(152 69% 38%);
+  --color-success-hover: hsl(152 69% 30%);
+  --color-success-foreground: hsl(0 0% 100%);
+  --color-dark-success: hsl(152 63% 28%);
+  --color-dark-success-hover: hsl(152 63% 22%);
+  --color-dark-success-foreground: hsl(0 0% 100%);
+
+  --color-danger: hsl(0 72% 51%);
+  --color-danger-hover: hsl(0 72% 42%);
+  --color-danger-foreground: hsl(0 0% 100%);
+  --color-dark-danger: hsl(0 63% 35%);
+  --color-dark-danger-hover: hsl(0 63% 28%);
+  --color-dark-danger-foreground: hsl(0 0% 100%);
+
+  --color-warning: hsl(32 95% 44%);
+  --color-warning-hover: hsl(32 95% 35%);
+  --color-warning-foreground: hsl(0 0% 100%);
+  --color-dark-warning: hsl(32 85% 33%);
+  --color-dark-warning-hover: hsl(32 85% 26%);
+  --color-dark-warning-foreground: hsl(0 0% 100%);
+
+  --color-info: hsl(199 89% 42%);
+  --color-info-hover: hsl(199 89% 33%);
+  --color-info-foreground: hsl(0 0% 100%);
+  --color-dark-info: hsl(199 75% 30%);
+  --color-dark-info-hover: hsl(199 75% 23%);
+  --color-dark-info-foreground: hsl(0 0% 100%);
 }
 
-/* LIGHT THEME */
+/* Login Page Styles */
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f6f8;
+}
+
+.login-form {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h2 {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.login-input {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.header {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+
+  background-size: 20px 20px;
+}
+
+.darkHeader {
+  background-color: var(--color-dark-background);
+
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+
+  background-size: 20px 20px;
+}
+
+.gradient {
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* ================= SCROLLBAR ================= */
 :root {
-  --background: #FFF2E1;
-  --foreground: #222222;
-
-  --card: rgba(255, 255, 255, 0.65);
-  --card-foreground: #222222;
-
-  --popover: #ffffff;
-  --popover-foreground: #222222;
-
-  --primary: #A79277;
-  --primary-foreground: #ffffff;
-
-  --secondary: rgba(0, 0, 0, 0.04);
-  --secondary-foreground: #222222;
-
-  --muted: rgba(0, 0, 0, 0.04);
-  --muted-foreground: #666666;
-
-  --accent: rgba(167, 146, 119, 0.12);
-  --accent-foreground: #222222;
-
-  --destructive: #c0392b;
-  --destructive-foreground: #ffffff;
-
-  --border: rgba(0, 0, 0, 0.06);
-  --input: rgba(0, 0, 0, 0.08);
-  --ring: #A79277;
-
-  --sidebar: rgba(255, 255, 255, 0.5);
-  --sidebar-foreground: #222222;
-  --sidebar-border: rgba(0, 0, 0, 0.06);
-  --sidebar-accent: rgba(0, 0, 0, 0.04);
-  --sidebar-accent-foreground: #222222;
-  --sidebar-primary: #A79277;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #A79277;
-
-  --chart-1: #A79277;
-  --chart-2: #6b5b47;
-  --chart-3: #d1b89a;
-  --chart-4: #8a7a63;
-  --chart-5: #c4a987;
-
-  --radius: 16px;
-
-  --shadow-soft: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
-  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.06);
-  --shadow-lift: 0 2px 4px rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.08);
+  --scrollbar-size: 10px;
+  --scrollbar-track: hsl(210 40% 93%);
+  --scrollbar-thumb: hsl(215 16% 58%);
+  --scrollbar-thumb-hover: hsl(217 91% 55%);
 }
 
-/* DARK THEME */
 .dark {
-  --background: #121313;
-  --foreground: #F5F5F5;
-
-  --card: rgba(255, 255, 255, 0.04);
-  --card-foreground: #F5F5F5;
-
-  --popover: #1a1b1b;
-  --popover-foreground: #F5F5F5;
-
-  --primary: #FF6044;
-  --primary-foreground: #ffffff;
-
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: #F5F5F5;
-
-  --muted: rgba(255, 255, 255, 0.04);
-  --muted-foreground: rgba(245, 245, 245, 0.65);
-
-  --accent: rgba(255, 96, 68, 0.14);
-  --accent-foreground: #F5F5F5;
-
-  --destructive: #e74c3c;
-  --destructive-foreground: #ffffff;
-
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: #FF6044;
-
-  --sidebar: rgba(255, 255, 255, 0.02);
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-accent: rgba(255, 255, 255, 0.06);
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-primary: #FF6044;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-ring: #FF6044;
-
-  --chart-1: #FF6044;
-  --chart-2: #f0a08b;
-  --chart-3: #d14a30;
-  --chart-4: #ffa48f;
-  --chart-5: #b54029;
-
-  --shadow-soft: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
-  --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 12px 32px rgba(0,0,0,0.35);
-  --shadow-lift: 0 2px 4px rgba(0,0,0,0.5), 0 24px 48px rgba(0,0,0,0.45);
+  --scrollbar-track: hsl(223 36% 12%);
+  --scrollbar-thumb: hsl(215 16% 42%);
+  --scrollbar-thumb-hover: hsl(217 91% 60%);
 }
 
-@layer base {
-  * { border-color: var(--color-border); }
-  html, body, #root { height: 100%; }
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
-    -webkit-font-smoothing: antialiased;
-    transition: background-color 280ms ease, color 280ms ease;
-  }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-@utility glass {
-  background: var(--card);
-  backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: var(--shadow-card);
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
 }
 
-@utility glass-strong {
-  background: color-mix(in oklab, var(--card) 75%, transparent);
-  backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: var(--shadow-lift);
-}
-
-@utility glass-flat {
-  background: var(--card);
-  backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-
-/* Subtle scrollbar */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb {
-  background: color-mix(in oklab, var(--foreground) 12%, transparent);
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in oklab, var(--foreground) 20%, transparent);
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-track);
 }
-::-webkit-scrollbar-track { background: transparent; }
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: hsl(222 47% 11% / 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.dark .modal-overlay {
+  background: hsl(222 47% 4% / 0.72);
+}
+
+.modal-panel {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-height: 90vh;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-card-foreground);
+  box-shadow:
+    0 24px 48px -12px hsl(222 47% 11% / 0.18),
+    0 0 0 1px hsl(214 32% 88% / 0.4);
+}
+
+.modal-panel-scroll {
+  max-height: min(90vh, calc(100dvh - 2rem));
+}
+
+.modal-panel-scroll .modal-form-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.dark .modal-panel {
+  border-color: var(--color-dark-border);
+  background: var(--color-dark-card);
+  color: var(--color-dark-card-foreground);
+  box-shadow:
+    0 24px 48px -12px hsl(222 47% 4% / 0.65),
+    0 0 0 1px hsl(223 32% 16% / 0.8);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid hsl(214 32% 88% / 0.75);
+  background: hsl(210 40% 98% / 0.92);
+  color: hsl(215 16% 40%);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: hsl(210 40% 93%);
+  color: hsl(222 47% 11%);
+  border-color: hsl(214 32% 82%);
+}
+
+.dark .modal-close-btn {
+  border-color: hsl(223 32% 22%);
+  background: hsl(223 36% 14% / 0.95);
+  color: hsl(215 16% 68%);
+}
+
+.dark .modal-close-btn:hover {
+  background: hsl(223 36% 18%);
+  color: hsl(213 31% 91%);
+  border-color: hsl(223 32% 28%);
+}
+
+.modal-close-btn-inline {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  border: 1px solid hsl(214 32% 88% / 0.75);
+  background: hsl(210 40% 93% / 0.8);
+  color: hsl(215 16% 40%);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-close-btn-inline:hover {
+  background: hsl(210 40% 88%);
+  color: hsl(222 47% 11%);
+}
+
+.dark .modal-close-btn-inline {
+  border-color: hsl(223 32% 22%);
+  background: hsl(223 36% 14% / 0.85);
+  color: hsl(215 16% 68%);
+}
+
+.dark .modal-close-btn-inline:hover {
+  background: hsl(223 36% 18%);
+  color: hsl(213 31% 91%);
+}
+
+.modal-body-scroll {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+/* ================= ADMIN TABLE HEADER ================= */
+.admin-table-header {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 3.5rem;
+  padding-inline: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-secondary-foreground);
+}
+
+.dark .admin-table-header {
+  border-color: var(--color-dark-border);
+  background: var(--color-dark-secondary);
+  color: var(--color-dark-secondary-foreground);
+}
+
+/* ================= PAGE SECTIONS ================= */
+.page-section-alt {
+  background: hsl(210 40% 95%);
+  border-block: 1px solid hsl(214 32% 88% / 0.85);
+}
+
+.dark .page-section-alt {
+  background: hsl(223 36% 10%);
+  border-block-color: hsl(223 32% 18%);
+}
+
+.page-section-surface {
+  background: hsl(0 0% 100%);
+  border-block: 1px solid hsl(214 32% 88% / 0.85);
+}
+
+.dark .page-section-surface {
+  background: hsl(222 44% 8%);
+  border-block-color: hsl(223 32% 18%);
+}
+
+/* ================= LIGHT MOTION ================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
