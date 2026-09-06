@@ -53,6 +53,11 @@ function App() {
                   < UserDashboard />
                 </SecureRoute >
               } />
+              <Route path="/admin/alumni" element={
+                <SecureRoute>
+                  <UserDashboard defaultType="Alumni" />
+                </SecureRoute>
+              } />
               <Route path="/admin/content" element={<SecureRoute><ContentDashboard /></SecureRoute>} />
               <Route path="/admin/application" element={<SecureRoute><ApplicationDashboard /></SecureRoute>} />
               <Route path="/admin/settings" element={<SecureRoute><SettingDashboard /></SecureRoute>} />
