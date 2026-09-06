@@ -42,7 +42,7 @@ const Careers = () => {
       />
 
       {statusLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-muted dark:bg-dark-secondary min-h-[50vh]">
+        <div className="flex flex-col items-center justify-center py-20 bg-background dark:bg-dark-background min-h-[50vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-dark-primary"></div>
           <p className="mt-4 text-muted-foreground dark:text-dark-muted-foreground font-medium">
             Checking registration status...

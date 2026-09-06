@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { fetchUsers } from "../../controllers/admin/userDashboard";
-import Loader from "../../components/Loader";
+import { AdminTableSkeleton } from "../../components/ui/Skeletons";
 import Slider from "../../components/admin/slider";
 import UserAdd from "../../components/admin/userAdd";
 import UserEditModal from "../../components/admin/UserEditModal";
@@ -122,9 +122,14 @@ const UserDashboard = ({ defaultType }) => {
 
                     {/* ================= LOADING ================= */}
                     {loading ? (
-                        <div className="py-14 text-center text-muted-foreground dark:text-dark-muted-foreground">
-                            <Loader lable={`Loading ${curr.toLowerCase()}...`} />
-
+                        <div className="min-w-[760px]">
+                            <div className="admin-table-header min-w-[760px] rounded-t-2xl">
+                                <div className="flex w-[25%] items-center py-4">Name</div>
+                                <div className="flex w-[35%] items-center py-4">{curr === "Alumni" ? "Company" : "Email"}</div>
+                                <div className="flex w-[20%] items-center py-4">{curr === "Alumni" ? "Passing Year" : "Role"}</div>
+                                <div className="flex w-[20%] items-center justify-end py-4">Action</div>
+                            </div>
+                            <AdminTableSkeleton count={6} />
                         </div>
                     ) : users.length === 0 ? (
 
