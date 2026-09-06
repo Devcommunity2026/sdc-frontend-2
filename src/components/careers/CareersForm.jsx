@@ -25,14 +25,17 @@ const CareersForm = ({ form, handleChange, handleSubmit, loading }) => {
   `;
 
   return (
-    <section className="py-16 bg-muted dark:bg-dark-secondary">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <section className="relative overflow-hidden py-16 md:py-20 bg-background dark:bg-dark-background">
+      {/* Ambient background glow */}
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 w-96 h-96 rounded-full blur-[140px] bg-primary/10 pointer-events-none" />
+
+      <div className="container mx-auto px-4 max-w-3xl relative z-10">
         <motion.form
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 0.1, ease: EASE_OUT }}
           onSubmit={handleSubmit}
-          className="rounded-3xl p-6 md:p-10 space-y-6 border shadow-sm bg-card border-border dark:bg-dark-card dark:border-dark-border"
+          className="rounded-3xl p-6 md:p-10 space-y-6 border shadow-lg bg-card border-border dark:bg-dark-card dark:border-dark-border"
         >
           <div>
             <h2 className="text-3xl font-bold text-foreground dark:text-dark-foreground text-left">

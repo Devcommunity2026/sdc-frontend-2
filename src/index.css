@@ -8,7 +8,7 @@
   --color-dark-background: hsl(222 47% 6%);
   --color-dark-foreground: hsl(213 31% 91%);
 
-  --color-dark-card: hsl(222 44% 9%);
+  --color-dark-card: hsl(222 42% 10%);
   --color-dark-card-foreground: hsl(213 31% 91%);
 
   --color-dark-muted: hsl(223 36% 14%);
@@ -23,8 +23,8 @@
   --color-dark-accent: hsl(199 89% 48%);
   --color-dark-accent-foreground: hsl(213 31% 95%);
 
-  --color-dark-border: hsl(223 32% 16%);
-  --color-dark-input: hsl(223 32% 16%);
+  --color-dark-border: hsl(222 35% 15%);
+  --color-dark-input: hsl(222 35% 15%);
   --color-dark-ring: hsl(217 91% 60%);
 
   /* ================= LIGHT COLORS ================= */
@@ -337,8 +337,8 @@
 }
 
 .dark .page-section-alt {
-  background: hsl(223 36% 10%);
-  border-block-color: hsl(223 32% 18%);
+  background: hsl(222 47% 6.5%);
+  border-block: 1px solid hsl(222 35% 14% / 0.4);
 }
 
 .page-section-surface {
@@ -347,8 +347,8 @@
 }
 
 .dark .page-section-surface {
-  background: hsl(222 44% 8%);
-  border-block-color: hsl(223 32% 18%);
+  background: hsl(222 47% 6%);
+  border-block: 1px solid hsl(222 35% 14% / 0.4);
 }
 
 /* ================= LIGHT MOTION ================= */
@@ -361,4 +361,13 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ================= HIDE SCROLLBAR UTILITY ================= */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

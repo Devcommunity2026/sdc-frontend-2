@@ -8,6 +8,8 @@ const UserEditModal = ({ curr, user, setOpenEditModal, page, setUsers, setTotalP
         name: user.name || "",
         post: user.post || "",
         description: user.description || "",
+        company: user.company || "",
+        passingYear: user.passingYear || "",
         linkedin: user.linkedin || user.linkedIn || "",
         image: null,
     });
@@ -64,6 +66,52 @@ const UserEditModal = ({ curr, user, setOpenEditModal, page, setUsers, setTotalP
                         />
                     </div>
 
+                    {/* COMPANY (ALUMNI ONLY) */}
+                    {curr === "Alumni" && (
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
+                                Company *
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="Company"
+                                value={formData.company}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        company: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none text-sm text-foreground dark:text-dark-foreground"
+                            />
+                        </div>
+                    )}
+
+                    {/* PASSING YEAR (ALUMNI ONLY) */}
+                    {curr === "Alumni" && (
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
+                                Passing Year *
+                            </label>
+                            <input
+                                type="number"
+                                required
+                                placeholder="Passing Year"
+                                min="1900"
+                                max="2100"
+                                value={formData.passingYear}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        passingYear: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none text-sm text-foreground dark:text-dark-foreground"
+                            />
+                        </div>
+                    )}
+
                     {/* POST (TEAM ONLY) */}
                     {curr === "Team" && (
                         <div className="space-y-1">
@@ -108,42 +156,46 @@ const UserEditModal = ({ curr, user, setOpenEditModal, page, setUsers, setTotalP
                     )}
 
                     {/* LINKEDIN */}
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
-                            LinkedIn URL *
-                        </label>
-                        <input
-                            type="url"
-                            required
-                            placeholder="LinkedIn URL"
-                            value={formData.linkedin}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    linkedin: e.target.value,
-                                })
-                            }
-                            className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none text-sm text-foreground dark:text-dark-foreground"
-                        />
-                    </div>
+                    {curr !== "Alumni" && (
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
+                                LinkedIn URL *
+                            </label>
+                            <input
+                                type="url"
+                                required
+                                placeholder="LinkedIn URL"
+                                value={formData.linkedin}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        linkedin: e.target.value,
+                                    })
+                                }
+                                className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none text-sm text-foreground dark:text-dark-foreground"
+                            />
+                        </div>
+                    )}
 
                     {/* IMAGE FILE UPLOAD */}
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
-                            Upload Image (leave empty to keep current)
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                                setFormData({
-                                    ...formData,
-                                    image: e.target.files[0],
-                                });
-                            }}
-                            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 dark:file:bg-dark-primary/10 dark:file:text-dark-primary cursor-pointer text-foreground dark:text-dark-foreground"
-                        />
-                    </div>
+                    {curr !== "Alumni" && (
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-muted-foreground dark:text-dark-muted-foreground">
+                                Upload Image (leave empty to keep current)
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    setFormData({
+                                        ...formData,
+                                        image: e.target.files[0],
+                                    });
+                                }}
+                                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 dark:file:bg-dark-primary/10 dark:file:text-dark-primary cursor-pointer text-foreground dark:text-dark-foreground"
+                            />
+                        </div>
+                    )}
 
                     {/* SUBMIT BUTTON */}
                     <button

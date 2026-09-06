@@ -54,6 +54,19 @@ export const fetchUsers = async (
             setUsers(res.data.data || []);
             setTotalPages(1);
         }
+
+        // ================= ALUMNI =================
+        else if (curr === "Alumni") {
+            res = await axios.get(
+                `${API_URL}/mod/alumni?page=${page}&limit=10`,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            setUsers(res.data.data || []);
+            setTotalPages(res.data.pagination?.totalPages || 1);
+        }
     } catch (error) {
         console.log(error);
     } finally {
@@ -170,7 +183,7 @@ export const handleDeleteMember = async (
     fetchAgain
 ) => {
     try {
-        if (!confirm(`Are you sure you want to permanently delete this ${curr === "Team" ? "Team Member" : "Mentor"}?`)) {
+        if (!confirm(`Are you sure you want to permanently delete this ${curr === "Team" ? "Team Member" : curr}?`)) {
             return;
         }
 
@@ -189,6 +202,17 @@ export const handleDeleteMember = async (
         else if (curr === "Mentor") {
             await axios.post(
                 `${API_URL}/edit/removeMentor`,
+                { id },
+                {
+                    withCredentials: true,
+                }
+            );
+        }
+
+        // ================= ALUMNI DELETE =================
+        else if (curr === "Alumni") {
+            await axios.post(
+                `${API_URL}/edit/removeAlumni`,
                 { id },
                 {
                     withCredentials: true,
@@ -252,38 +276,62 @@ export const handleAddMember = async ({
     try {
         setSubmitLoading(true);
 
-        const data = new FormData();
+        if (curr === "Alumni") {
+            const trimmedName = formData.name?.trim();
+            const trimmedCompany = formData.company?.trim();
+            const parsedYear = Number(formData.passingYear);
 
-        data.append("name", formData.name);
-        data.append("linkedin", formData.linkedin);
-        data.append("image", formData.image);
-
-        if (curr === "Team") {
-            data.append("post", formData.post);
-
-            await axios.post(
-                `${API_URL}/edit/addCoreTeamMember`,
-                data,
-                {
-                    withCredentials: true,
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
-        } else if (curr === "Mentor") {
-            data.append("description", formData.description);
+            if (!trimmedName || !trimmedCompany || !formData.passingYear || isNaN(parsedYear) || parsedYear < 1900 || parsedYear > 2100) {
+                alert("Please provide Name, Company, and a valid Passing Year (between 1900 and 2100)");
+                setSubmitLoading(false);
+                return;
+            }
 
             await axios.post(
-                `${API_URL}/edit/addMentor`,
-                data,
+                `${API_URL}/edit/addAlumni`,
+                {
+                    name: trimmedName,
+                    company: trimmedCompany,
+                    passingYear: parsedYear,
+                },
                 {
                     withCredentials: true,
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
                 }
             );
+        } else {
+            const data = new FormData();
+
+            data.append("name", formData.name);
+            data.append("linkedin", formData.linkedin);
+            data.append("image", formData.image);
+
+            if (curr === "Team") {
+                data.append("post", formData.post);
+
+                await axios.post(
+                    `${API_URL}/edit/addCoreTeamMember`,
+                    data,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+            } else if (curr === "Mentor") {
+                data.append("description", formData.description);
+
+                await axios.post(
+                    `${API_URL}/edit/addMentor`,
+                    data,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+            }
         }
 
         await fetchUsers(
@@ -300,11 +348,14 @@ export const handleAddMember = async ({
             name: "",
             post: "",
             description: "",
+            company: "",
+            passingYear: "",
             linkedin: "",
             image: null,
         });
     } catch (error) {
         console.error(error);
+        alert(error.response?.data?.message || `Failed to add ${curr}`);
     } finally {
         setSubmitLoading(false);
     }
@@ -324,32 +375,58 @@ export const handleEditMember = async ({
 }) => {
     try {
         setSubmitLoading(true);
-        const data = new FormData();
-        data.append("id", id);
-        data.append("name", formData.name);
-        data.append("linkedin", formData.linkedin);
-        if (formData.image) {
-            data.append("image", formData.image);
-        }
 
-        if (curr === "Team") {
-            data.append("post", formData.post);
+        if (curr === "Alumni") {
+            const trimmedName = formData.name?.trim();
+            const trimmedCompany = formData.company?.trim();
+            const parsedYear = Number(formData.passingYear);
 
-            await axios.post(`${API_URL}/edit/editCoreTeamMember`, data, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data",
+            if (!trimmedName || !trimmedCompany || !formData.passingYear || isNaN(parsedYear) || parsedYear < 1900 || parsedYear > 2100) {
+                alert("Please provide Name, Company, and a valid Passing Year (between 1900 and 2100)");
+                setSubmitLoading(false);
+                return;
+            }
+
+            await axios.post(
+                `${API_URL}/edit/editAlumni`,
+                {
+                    id,
+                    name: trimmedName,
+                    company: trimmedCompany,
+                    passingYear: parsedYear,
                 },
-            });
-        } else if (curr === "Mentor") {
-            data.append("description", formData.description);
+                {
+                    withCredentials: true,
+                }
+            );
+        } else {
+            const data = new FormData();
+            data.append("id", id);
+            data.append("name", formData.name);
+            data.append("linkedin", formData.linkedin);
+            if (formData.image) {
+                data.append("image", formData.image);
+            }
 
-            await axios.post(`${API_URL}/edit/editMentor`, data, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            if (curr === "Team") {
+                data.append("post", formData.post);
+
+                await axios.post(`${API_URL}/edit/editCoreTeamMember`, data, {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            } else if (curr === "Mentor") {
+                data.append("description", formData.description);
+
+                await axios.post(`${API_URL}/edit/editMentor`, data, {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+            }
         }
 
         await fetchUsers(

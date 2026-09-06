@@ -31,26 +31,30 @@ const UserRow = ({
                 <span className="truncate pr-4">{user.name}</span>
             </div>
 
-            {/* EMAIL / LINKEDIN */}
+            {/* EMAIL / LINKEDIN / COMPANY */}
             <div
                 className="w-[35%] flex items-center py-4 break-all text-muted-foreground
                 dark:text-dark-muted-foreground"
             >
-                <span className="truncate pr-4">{user.email || user.linkedIn ||
-                    user.linkedin ||
-                    "No Email"}</span>
+                <span className="truncate pr-4">
+                    {curr === "Alumni"
+                        ? (user.company || "N/A")
+                        : (user.email || user.linkedIn || user.linkedin || "No Email")}
+                </span>
             </div>
 
-            {/* ROLE */}
+            {/* ROLE / PASSING YEAR */}
             <div className="w-[20%] flex items-center py-4">
                 <span
                     className={`px-2.5 py-1 rounded-full text-[11px] font-semibold capitalize
-                    ${user.role === "mentor"
+                    ${curr === "Alumni"
+                        ? "bg-primary/15 dark:bg-dark-primary/20 text-primary dark:text-dark-primary"
+                        : user.role === "mentor"
                             ? "bg-accent/15 dark:bg-dark-accent/20 text-accent dark:text-dark-accent"
                             : "bg-primary/15 dark:bg-dark-primary/20 text-primary dark:text-dark-primary"
                         }`}
                 >
-                    {user.role || curr}
+                    {curr === "Alumni" ? (user.passingYear || "N/A") : (user.role || curr)}
                 </span>
             </div>
 
@@ -182,7 +186,7 @@ const UserRow = ({
                                 className="w-full px-4 py-3 flex items-center gap-3 text-sm text-danger dark:text-dark-danger hover:bg-danger/10 dark:hover:bg-dark-danger/15 transition"
                             >
                                 <Ban size={16} />
-                                Delete Member
+                                Delete {curr === "Alumni" ? "Alumni" : "Member"}
                             </button>
                         )}
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { fetchUsers } from "../../controllers/admin/userDashboard";
-import Loader from "../../components/Loader";
+import { AdminTableSkeleton } from "../../components/ui/Skeletons";
 import Slider from "../../components/admin/slider";
 import UserAdd from "../../components/admin/userAdd";
 import UserEditModal from "../../components/admin/UserEditModal";
@@ -13,7 +13,7 @@ import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import AdminPanel from "../../components/admin/AdminPanel";
 import { Plus, Users } from "lucide-react";
 
-const UserDashboard = () => {
+const UserDashboard = ({ defaultType }) => {
     const { user } = useAuth();
     const storedRole = useMemo(() => {
         if (user?.role) return user.role;
@@ -27,14 +27,24 @@ const UserDashboard = () => {
     const isAdmin = storedRole === "admin";
 
     const userType = useMemo(
-        () => (isAdmin ? ["All", "Team", "Mentor"] : ["Team", "Mentor"]),
+        () => (isAdmin ? ["All", "Team", "Mentor", "Alumni"] : ["Team", "Mentor", "Alumni"]),
         [isAdmin]
     );
 
     const [selectedType, setSelectedType] = useState(() => {
+        if (defaultType && (defaultType === "Alumni" || userType.includes(defaultType))) {
+            return defaultType;
+        }
         const saved = localStorage.getItem("admin_user_slider");
         return userType.includes(saved) ? saved : userType[0];
     });
+
+    useEffect(() => {
+        if (defaultType && userType.includes(defaultType)) {
+            setSelectedType(defaultType);
+        }
+    }, [defaultType, userType]);
+
     const curr = userType.includes(selectedType) ? selectedType : userType[0];
 
     const [users, setUsers] = useState([]);
@@ -74,7 +84,7 @@ const UserDashboard = () => {
                 <AdminPageHeader
                     icon={Users}
                     title="User Management"
-                    description={isAdmin ? "Manage platform users, roles, team members, and mentors from one workspace." : "Manage team members and mentors available to moderator permissions."}
+                    description={isAdmin ? "Manage platform users, roles, team members, mentors, and alumni from one workspace." : "Manage team members, mentors, and alumni available to moderator permissions."}
                     actions={
                         curr !== "All" && (
                             <button
@@ -112,15 +122,20 @@ const UserDashboard = () => {
 
                     {/* ================= LOADING ================= */}
                     {loading ? (
-                        <div className="py-14 text-center text-muted-foreground dark:text-dark-muted-foreground">
-                            <Loader lable={"Loading users..."} />
-
+                        <div className="min-w-[760px]">
+                            <div className="admin-table-header min-w-[760px] rounded-t-2xl">
+                                <div className="flex w-[25%] items-center py-4">Name</div>
+                                <div className="flex w-[35%] items-center py-4">{curr === "Alumni" ? "Company" : "Email"}</div>
+                                <div className="flex w-[20%] items-center py-4">{curr === "Alumni" ? "Passing Year" : "Role"}</div>
+                                <div className="flex w-[20%] items-center justify-end py-4">Action</div>
+                            </div>
+                            <AdminTableSkeleton count={6} />
                         </div>
                     ) : users.length === 0 ? (
 
                         /* ================= EMPTY ================= */
                         <div className="py-14 text-center text-muted-foreground dark:text-dark-muted-foreground">
-                            No Users Found
+                            No {curr} Found
                         </div>
 
                     ) : (
@@ -133,10 +148,10 @@ const UserDashboard = () => {
                                     Name
                                 </div>
                                 <div className="flex w-[35%] items-center break-all py-4">
-                                    Details
+                                    {curr === "Alumni" ? "Company" : "Details"}
                                 </div>
                                 <div className="flex w-[20%] items-center py-4">
-                                    Role
+                                    {curr === "Alumni" ? "Passing Year" : "Role"}
                                 </div>
                                 <div className="relative flex w-[20%] items-center justify-center">
                                     Action

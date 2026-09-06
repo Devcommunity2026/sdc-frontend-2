@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Layout from '../components/Layout';
-import Loader from '../components/Loader';
+import { BlogGridSkeleton } from "../components/ui/Skeletons";
 import BlogCard from "../components/ui/BlogCard";
 import { fetchBlogs } from "../controllers/detailsRequest";
 import { Calendar, Clock, User, BookOpen } from "lucide-react";
@@ -95,7 +95,7 @@ function Blogs() {
        
 
         {loading ? (
-          <Loader label={"Loading Blogs..."}/>
+          <BlogGridSkeleton count={6} />
         ) : displayBlogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
             <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-muted dark:bg-dark-muted text-muted-foreground dark:text-dark-muted-foreground">

@@ -10,6 +10,7 @@ import AdminLayout from "../../components/admin/adminLayout";
 import ApplicationCard from "../../components/admin/applicationCard";
 import AdminPageHeader from "../../components/admin/AdminPageHeader";
 import AdminPanel from "../../components/admin/AdminPanel";
+import { ApplicationListSkeleton } from "../../components/ui/Skeletons";
 import { ClipboardList, Loader2 } from "lucide-react";
 
 const ApplicationDashboard = () => {
@@ -226,11 +227,7 @@ const ApplicationDashboard = () => {
                 <AdminPanel className="overflow-hidden">
                     {/* ================= LOADING ================= */}
                     {loading && (
-                        <div className="p-10 text-center">
-                            <p className="text-muted-foreground dark:text-dark-muted-foreground">
-                                Loading applications...
-                            </p>
-                        </div>
+                        <ApplicationListSkeleton count={4} />
                     )}
 
                     {/* ================= ERROR ================= */}
