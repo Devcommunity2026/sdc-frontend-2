@@ -11,6 +11,7 @@ import EventCard from "../components/ui/EventCard";
 import SectionHeading from "../components/ui/SectionHeading";
 import StatCounter from "../components/ui/StatsCounter";
 import MentorCard from "../components/ui/MentorCard";
+import { EventGridSkeleton, MentorGridSkeleton } from "../components/ui/Skeletons";
 
 import { Laptop, Users, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ import { domains } from "../data/mockData";
 const Home = () => {
   const [events, setEvents] = useState([]);
   const [mentors, setMentors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [communityStats, setCommunityStats] = useState([
     {
@@ -43,7 +45,9 @@ const Home = () => {
 
 
   useEffect(() => {
-    fetchHomeData({ setEvents, setMentors, setCommunityStats });
+    fetchHomeData({ setEvents, setMentors, setCommunityStats }).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -202,18 +206,22 @@ const Home = () => {
             subtitle="Don't miss out on our exciting events, workshops, and hackathons."
           />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event, i) => (
-              <EventCard
-                key={event._id}
-                event={{
-                  ...event,
-                  image: event.thumbnail || event.image,
-                }}
-                index={i}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <EventGridSkeleton count={3} />
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map((event, i) => (
+                <EventCard
+                  key={event._id}
+                  event={{
+                    ...event,
+                    image: event.thumbnail || event.image,
+                  }}
+                  index={i}
+                />
+              ))}
+            </div>
+          )}
 
           <div className="flex justify-center mt-10">
             <Link to="/events">
@@ -248,15 +256,19 @@ const Home = () => {
             subtitle="Industry experts who guide our community members on their tech journey."
           />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mentors.map((mentor, i) => (
-              <MentorCard
-                key={mentor._id}
-                mentor={mentor}
-                index={i}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <MentorGridSkeleton count={3} />
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mentors.map((mentor, i) => (
+                <MentorCard
+                  key={mentor._id}
+                  mentor={mentor}
+                  index={i}
+                />
+              ))}
+            </div>
+          )}
 
           <div className="flex justify-center mt-10">
             <Link to="/team">

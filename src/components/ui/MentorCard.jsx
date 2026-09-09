@@ -9,11 +9,11 @@ const MentorCard = ({ mentor, index }) => {
       {...cardHover}
       className="
         relative overflow-hidden rounded-3xl
-        max-w-sm mx-auto
-        border shadow-md transition-all duration-300
+        max-w-sm mx-auto w-full
+        border shadow-sm transition-all duration-300
         bg-card text-card-foreground border-border
-        hover:shadow-xl
-        dark:bg-dark-card dark:text-dark-card-foreground dark:border-dark-border
+        hover:shadow-xl hover:border-primary/40
+        dark:bg-dark-card dark:text-dark-card-foreground dark:border-dark-border dark:hover:border-dark-primary/40
       "
     >
 
@@ -53,7 +53,7 @@ const MentorCard = ({ mentor, index }) => {
         {/* Name */}
         <h2
           className="
-            text-xl font-bold mb-1
+            text-xl font-bold mb-2
             text-foreground dark:text-dark-foreground
           "
         >
@@ -61,14 +61,16 @@ const MentorCard = ({ mentor, index }) => {
         </h2>
 
         {/* Position */}
-        <p
-          className="
-            text-primary dark:text-dark-primary
-            font-medium text-base mb-4
-          "
-        >
-          {mentor.Position}
-        </p>
+        {mentor.Position && (
+          <p
+            className="
+              text-primary dark:text-dark-primary
+              font-medium text-sm mb-3
+            "
+          >
+            {mentor.Position}
+          </p>
+        )}
 
         {/* Role Description */}
         <p

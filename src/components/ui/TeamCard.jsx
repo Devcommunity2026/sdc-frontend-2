@@ -2,12 +2,15 @@ import { motion } from "framer-motion";
 import { FaLinkedin } from "react-icons/fa";
 import { cardHover, fadeUp } from "../../libs/motion";
 
-const TeamCard = ({ member, index }) => {
+const TeamCard = ({ member, index = 0, disableFade = false }) => {
+  const motionProps = disableFade
+    ? cardHover
+    : { ...fadeUp(index, 0.05), ...cardHover };
+
   return (
     <motion.div
-      {...fadeUp(index, 0.05)}
-      {...cardHover}
-      className="group relative"
+      {...motionProps}
+      className="group relative h-full select-none"
     >
       {/* Glow */}
       <div

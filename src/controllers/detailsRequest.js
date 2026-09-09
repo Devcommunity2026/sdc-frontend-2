@@ -91,3 +91,25 @@ export const fetchBlogs = async (currentPage, limit, setBlogs, setTotalPages, se
         setLoading(false);
     }
 };
+
+export const fetchAlumniData = async (setLoading, setAlumni, setError) => {
+    try {
+        setLoading?.(true);
+        setError?.(null);
+
+        const res = await axios.get(
+            `${import.meta.env.VITE_API_URL}/public/alumni`
+        );
+
+        if (res.data.success) {
+            setAlumni(res.data.data || []);
+        } else {
+            setError?.(res.data.message || "Failed to fetch alumni");
+        }
+    } catch (error) {
+        console.error("Failed to fetch alumni", error);
+        setError?.(error.response?.data?.message || "Failed to load alumni records. Please try again later.");
+    } finally {
+        setLoading?.(false);
+    }
+};

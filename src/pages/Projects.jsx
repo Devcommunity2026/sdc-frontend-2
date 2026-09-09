@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Header from "../components/Header";
-import Loader from "../components/Loader";
+import { ProjectGridSkeleton } from "../components/ui/Skeletons";
 import Layout from "../components/Layout";
 import ProjectCard from "../components/ui/ProjectCard";
 import Paginator from '../components/ui/Paginator'
@@ -29,9 +29,7 @@ const Projects = () => {
       />
 
       {loading ? (
-        <div className="w-full flex items-center justify-center py-12">
-          <Loader label="Loading Projects..." />
-        </div>
+        <ProjectGridSkeleton count={6} />
       ) : projects.length > 0 ? (
         <div className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => (

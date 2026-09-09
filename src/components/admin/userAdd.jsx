@@ -17,6 +17,8 @@ const UserAdd = ({
         name: "",
         post: "",
         description: "",
+        company: "",
+        passingYear: "",
         linkedin: "",
         image: null,
     });
@@ -54,6 +56,40 @@ const UserAdd = ({
                     className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none"
                 />
 
+                {/* COMPANY (ALUMNI ONLY) */}
+                {curr === "Alumni" && (
+                    <input
+                        type="text"
+                        placeholder="Company Name (e.g. Google, Microsoft)"
+                        value={formData.company}
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                company: e.target.value,
+                            })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none"
+                    />
+                )}
+
+                {/* PASSING YEAR (ALUMNI ONLY) */}
+                {curr === "Alumni" && (
+                    <input
+                        type="number"
+                        placeholder="Passing Year (e.g. 2022)"
+                        min="1900"
+                        max="2100"
+                        value={formData.passingYear}
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                passingYear: e.target.value,
+                            })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none"
+                    />
+                )}
+
                 {/* POST */}
                 {curr === "Team" && (
                     <input
@@ -86,31 +122,35 @@ const UserAdd = ({
                 )}
 
                 {/* LINKEDIN */}
-                <input
-                    type="text"
-                    placeholder="LinkedIn URL"
-                    value={formData.linkedin}
-                    onChange={(e) =>
-                        setFormData({
-                            ...formData,
-                            linkedin: e.target.value,
-                        })
-                    }
-                    className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none"
-                />
+                {curr !== "Alumni" && (
+                    <input
+                        type="text"
+                        placeholder="LinkedIn URL"
+                        value={formData.linkedin}
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                linkedin: e.target.value,
+                            })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-transparent outline-none"
+                    />
+                )}
 
                 {/* IMAGE */}
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                        setFormData({
-                            ...formData,
-                            image: e.target.files[0],
-                        });
-                    }}
-                    className="w-full"
-                />
+                {curr !== "Alumni" && (
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            setFormData({
+                                ...formData,
+                                image: e.target.files[0],
+                            });
+                        }}
+                        className="w-full"
+                    />
+                )}
 
                 {/* SUBMIT */}
                 <button
