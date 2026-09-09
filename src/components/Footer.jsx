@@ -97,11 +97,11 @@ const Footer = () => {
             <ul className="space-y-3 text-sm text-muted-foreground dark:text-dark-muted-foreground">
               <li>
                 
-                <a  href="mailto:sdc.admins@gmail.com"
+                <a  href="mailto:dev.community@medicaps.ac.in"
                   className="inline-flex items-start gap-2 transition-colors hover:text-primary dark:hover:text-dark-primary"
                 >
                   <Mail size={16} className="mt-0.5 shrink-0" />
-                  sdc.admins@gmail.com
+                  dev.community@medicaps.ac.in
                 </a>
               </li>
               <li className="inline-flex items-start gap-2">
