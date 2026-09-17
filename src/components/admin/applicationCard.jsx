@@ -1,19 +1,64 @@
 import React, { useState } from "react";
-import { Mail, Phone, GraduationCap, Code2, FileText, CheckCircle2, Clock3, XCircle, Loader2 } from "lucide-react";
-import { handleStateChange } from '../../controllers/admin/ApplicationDashBoard'
-
+import {
+    Mail,
+    Phone,
+    GraduationCap,
+    Code2,
+    FileText,
+    CheckCircle2,
+    Clock3,
+    XCircle,
+    Loader2,
+    Trash2,
+    ExternalLink,
+    Calendar
+} from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const statusColors = {
-    Applied: "bg-info/10 text-info dark:bg-dark-info/20 dark:text-dark-info",
-    "On Hold": "bg-warning/10 text-warning dark:bg-dark-warning/20 dark:text-dark-warning",
-    Selected: "bg-success/10 text-success dark:bg-dark-success/20 dark:text-dark-success",
-    Rejected: "bg-danger/10 text-danger dark:bg-dark-danger/20 dark:text-dark-danger",
+    Applied: "bg-info/10 text-info dark:bg-dark-info/20 dark:text-dark-info border-info/30",
+    "On Hold": "bg-warning/10 text-warning dark:bg-dark-warning/20 dark:text-dark-warning border-warning/30",
+    ON_HOLD: "bg-warning/10 text-warning dark:bg-dark-warning/20 dark:text-dark-warning border-warning/30",
+    Selected: "bg-success/10 text-success dark:bg-dark-success/20 dark:text-dark-success border-success/30",
+    SELECTED: "bg-success/10 text-success dark:bg-dark-success/20 dark:text-dark-success border-success/30",
+    Rejected: "bg-danger/10 text-danger dark:bg-dark-danger/20 dark:text-dark-danger border-danger/30",
+    REJECTED: "bg-danger/10 text-danger dark:bg-dark-danger/20 dark:text-dark-danger border-danger/30",
 };
 
-const ApplicationCard = ({ application, curr }) => {
-    const [loading, setLoading] = useState("");
+const formatStatusLabel = (status) => {
+    if (!status) return "On Hold";
+    const s = String(status).toUpperCase();
+    if (s === "ON_HOLD" || s === "ON HOLD") return "ON_HOLD";
+    if (s === "SELECTED") return "SELECTED";
+    if (s === "REJECTED") return "REJECTED";
+    return status;
+};
 
+const ApplicationCard = ({
+    application,
+    curr,
+    onStatusChange,
+    onDeleteRequest
+}) => {
+    const [loadingStatus, setLoadingStatus] = useState("");
+
+    const currentStatus = formatStatusLabel(application?.status);
+    const dateFormatted = application?.createdAt
+        ? new Date(application.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+          })
+        : "N/A";
+
+    const handleUpdate = async (newStatus) => {
+        if (loadingStatus) return;
+        setLoadingStatus(newStatus);
+        if (onStatusChange) {
+            await onStatusChange(application._id, newStatus);
+        }
+        setLoadingStatus("");
+    };
 
     return (
         <div className="w-full bg-card p-4 transition-all duration-300 hover:bg-secondary/40 dark:bg-dark-card dark:hover:bg-dark-secondary/40 sm:p-5 lg:p-6">
@@ -22,40 +67,53 @@ const ApplicationCard = ({ application, curr }) => {
                 {/* ================= LEFT ================= */}
                 <div className="flex-1 space-y-5">
 
-                    {/* NAME + STATUS */}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <h2 className="text-xl font-bold text-foreground dark:text-dark-foreground sm:text-2xl">
-                            {application?.name}
-                        </h2>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[application?.status]}`}>
-                            {application?.status}
-                        </span>
+                    {/* NAME + POSITION + STATUS + DATE */}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <h2 className="text-xl font-bold text-foreground dark:text-dark-foreground sm:text-2xl">
+                                {application?.name}
+                            </h2>
+                            <span
+                                className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                                    statusColors[application?.status] || statusColors.ON_HOLD
+                                }`}
+                            >
+                                {currentStatus}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-dark-muted-foreground">
+                            <Calendar size={14} />
+                            <span>Applied {dateFormatted}</span>
+                        </div>
                     </div>
 
                     {/* CONTACT INFO */}
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <div className="flex min-w-0 items-center gap-3 text-sm text-muted-foreground dark:text-dark-muted-foreground">
-                            <Mail size={18} />
+                            <Mail size={18} className="shrink-0 text-primary dark:text-dark-primary" />
                             <span className="break-all">{application?.email}</span>
                         </div>
                         <div className="flex min-w-0 items-center gap-3 text-sm text-muted-foreground dark:text-dark-muted-foreground">
-                            <Phone size={18} />
+                            <Phone size={18} className="shrink-0 text-primary dark:text-dark-primary" />
                             <span className="break-all">{application?.phone}</span>
                         </div>
                         <div className="flex min-w-0 items-center gap-3 text-sm text-muted-foreground dark:text-dark-muted-foreground">
-                            <GraduationCap size={18} />
+                            <GraduationCap size={18} className="shrink-0 text-primary dark:text-dark-primary" />
                             <span>{application?.college} • {application?.branch}</span>
                         </div>
                         <div className="flex min-w-0 items-center gap-3 text-sm text-muted-foreground dark:text-dark-muted-foreground">
-                            <Code2 size={18} />
-                            <span>Year {application?.year} • {application?.domain}</span>
+                            <Code2 size={18} className="shrink-0 text-primary dark:text-dark-primary" />
+                            <span className="font-medium text-foreground dark:text-dark-foreground">
+                                Year {application?.year} • {application?.domain || application?.position}
+                            </span>
                         </div>
                     </div>
 
                     {/* SKILLS */}
                     <div>
-                        <h3 className="text-sm font-semibold mb-3 text-foreground dark:text-dark-foreground">
-                            Skills
+                        <h3 className="text-xs font-semibold uppercase tracking-wider mb-2.5 text-muted-foreground dark:text-dark-muted-foreground">
+                            Technical Skills
                         </h3>
                         <div className="flex flex-wrap gap-2">
                             {application?.skills?.map((skill, index) => (
@@ -70,101 +128,148 @@ const ApplicationCard = ({ application, curr }) => {
                     </div>
 
                     {/* MOTIVATION */}
-                    <div>
-                        <h3 className="text-sm font-semibold mb-2 text-foreground dark:text-dark-foreground">
-                            Motivation
-                        </h3>
-                        <p className="rounded-xl border border-border bg-background p-4 text-sm leading-relaxed text-muted-foreground dark:border-dark-border dark:bg-dark-background dark:text-dark-muted-foreground">
-                            {application?.motivation}
-                        </p>
-                    </div>
+                    {application?.motivation && (
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground dark:text-dark-muted-foreground">
+                                Why Join SDC
+                            </h3>
+                            <p className="rounded-xl border border-border bg-background p-3.5 text-sm leading-relaxed text-muted-foreground dark:border-dark-border dark:bg-dark-background dark:text-dark-muted-foreground">
+                                {application?.motivation}
+                            </p>
+                        </div>
+                    )}
                 </div>
 
-                {/* ================= RIGHT ================= */}
-                <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3 xl:w-[260px] xl:grid-cols-1">
+                {/* ================= RIGHT LINKS ================= */}
+                <div className="grid w-full grid-cols-1 gap-2.5 sm:grid-cols-3 xl:w-[240px] xl:grid-cols-1">
+
+                    {/* VIEW RESUME BUTTON (Cloudinary via streaming/signed URL) */}
+                    {application?.resume && (
+                        <a
+                            href={
+                                application?.resumeViewUrl ||
+                                (application?._id
+                                    ? `${import.meta.env.VITE_API_URL}/api/admin/application/${application._id}/resume`
+                                    : application?.resume)
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/10 p-3.5 text-primary dark:border-dark-primary/40 dark:bg-dark-primary/20 dark:text-dark-primary transition-all duration-200 hover:bg-primary/20"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <FileText size={18} />
+                                <span className="text-sm font-semibold">View Resume</span>
+                            </div>
+                            <ExternalLink size={15} />
+                        </a>
+                    )}
 
                     {/* GITHUB */}
-                    <a
-                        href={application?.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
-                    >
-                        <FaGithub size={20} className="text-foreground dark:text-dark-foreground" />
-                        <div>
-                            <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">GitHub</p>
-                            <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">View Profile</p>
-                        </div>
-                    </a>
+                    {application?.github ? (
+                        <a
+                            href={application?.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between rounded-xl border border-border bg-background p-3 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <FaGithub size={18} className="text-foreground dark:text-dark-foreground" />
+                                <span className="text-xs font-medium text-foreground dark:text-dark-foreground">GitHub</span>
+                            </div>
+                            <ExternalLink size={13} className="text-muted-foreground" />
+                        </a>
+                    ) : null}
 
                     {/* LINKEDIN */}
-                    <a
-                        href={application?.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
-                    >
-                        <FaLinkedin size={20} className="text-foreground dark:text-dark-foreground" />
-                        <div>
-                            <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">LinkedIn</p>
-                            <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">View Profile</p>
-                        </div>
-                    </a>
-
-                    {/* RESUME */}
-                    <a
-                        href={application?.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
-                    >
-                        <FileText size={20} className="text-foreground dark:text-dark-foreground" />
-                        <div>
-                            <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">Resume</p>
-                            <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">Open Resume</p>
-                        </div>
-                    </a>
+                    {application?.linkedin ? (
+                        <a
+                            href={application?.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between rounded-xl border border-border bg-background p-3 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <FaLinkedin size={18} className="text-foreground dark:text-dark-foreground" />
+                                <span className="text-xs font-medium text-foreground dark:text-dark-foreground">LinkedIn</span>
+                            </div>
+                            <ExternalLink size={13} className="text-muted-foreground" />
+                        </a>
+                    ) : null}
                 </div>
             </div>
 
             {/* ================= ACTION BUTTONS ================= */}
-            <div className="mt-5 flex flex-wrap gap-3 border-t border-border pt-5 dark:border-dark-border">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 dark:border-dark-border">
 
-                {/* ACCEPT */}
-                {curr !== "Selected" && (
-                    <button
-                        disabled={loading != ""}
-                        onClick={() => handleStateChange("Selected", application, setLoading)}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-success px-5 py-2.5 text-sm font-medium text-success-foreground transition-all duration-200 hover:bg-success-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-success dark:hover:bg-dark-success-hover sm:flex-none"
-                    >
-                        {loading == "Selected" ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
-                        {loading == "Selected" ? "Updating..." : "Accept"}
-                    </button>
-                )}
+                {/* STATUS ACTIONS */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                    <span className="text-xs font-medium text-muted-foreground dark:text-dark-muted-foreground mr-1">
+                        Change Status:
+                    </span>
 
-                {/* ON HOLD */}
-                {curr !== "On Hold" && (
-                    <button
-                        disabled={loading != ""}
-                        onClick={() => handleStateChange("On Hold", application, setLoading)}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-warning px-5 py-2.5 text-sm font-medium text-warning-foreground transition-all duration-200 hover:bg-warning-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-warning dark:hover:bg-dark-warning-hover sm:flex-none"
-                    >
-                        {loading == "On Hold" ? <Loader2 size={18} className="animate-spin" /> : <Clock3 size={18} />}
-                        {loading == "On Hold" ? "Updating..." : "On Hold"}
-                    </button>
-                )}
+                    {/* SELECTED */}
+                    {currentStatus !== "SELECTED" && (
+                        <button
+                            type="button"
+                            disabled={Boolean(loadingStatus)}
+                            onClick={() => handleUpdate("SELECTED")}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-emerald-700 disabled:opacity-50 cursor-pointer"
+                        >
+                            {loadingStatus === "SELECTED" ? (
+                                <Loader2 size={13} className="animate-spin" />
+                            ) : (
+                                <CheckCircle2 size={13} />
+                            )}
+                            Select
+                        </button>
+                    )}
 
-                {/* REJECT */}
-                {curr !== "Rejected" && (
+                    {/* ON HOLD */}
+                    {currentStatus !== "ON_HOLD" && (
+                        <button
+                            type="button"
+                            disabled={Boolean(loadingStatus)}
+                            onClick={() => handleUpdate("ON_HOLD")}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-amber-600 disabled:opacity-50 cursor-pointer"
+                        >
+                            {loadingStatus === "ON_HOLD" ? (
+                                <Loader2 size={13} className="animate-spin" />
+                            ) : (
+                                <Clock3 size={13} />
+                            )}
+                            On Hold
+                        </button>
+                    )}
+
+                    {/* REJECTED */}
+                    {currentStatus !== "REJECTED" && (
+                        <button
+                            type="button"
+                            disabled={Boolean(loadingStatus)}
+                            onClick={() => handleUpdate("REJECTED")}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3.5 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-rose-700 disabled:opacity-50 cursor-pointer"
+                        >
+                            {loadingStatus === "REJECTED" ? (
+                                <Loader2 size={13} className="animate-spin" />
+                            ) : (
+                                <XCircle size={13} />
+                            )}
+                            Reject
+                        </button>
+                    )}
+                </div>
+
+                {/* DELETE ACTION */}
+                <div>
                     <button
-                        disabled={loading != ""}
-                        onClick={() => handleStateChange("Rejected", application, setLoading)}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-danger px-5 py-2.5 text-sm font-medium text-danger-foreground transition-all duration-200 hover:bg-danger-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-danger dark:hover:bg-dark-danger-hover sm:flex-none"
+                        type="button"
+                        onClick={() => onDeleteRequest && onDeleteRequest(application)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-danger/30 px-3.5 py-1.5 text-xs font-medium text-danger transition-all duration-200 hover:bg-danger/10 cursor-pointer"
                     >
-                        {loading == "Rejected" ? <Loader2 size={18} className="animate-spin" /> : <XCircle size={18} />}
-                        {loading == "Rejected" ? "Updating..." : "Reject"}
+                        <Trash2 size={14} />
+                        <span>Delete</span>
                     </button>
-                )}
+                </div>
             </div>
         </div>
     );

@@ -197,7 +197,7 @@ const Team = () => {
           ) : (
             <div className="max-w-4xl mx-auto">
               {/* Desktop Header */}
-              <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-3.5 mb-3 rounded-xl border border-border/60 dark:border-dark-border/60 bg-secondary/70 dark:bg-dark-secondary/70 text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-dark-muted-foreground shadow-xs">
+              <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-3.5 mb-3 rounded-xl border border-border/80 dark:border-dark-border/60 bg-card/80 dark:bg-dark-card/70 backdrop-blur-sm text-xs font-semibold uppercase tracking-wider text-muted-foreground dark:text-dark-muted-foreground shadow-xs">
                 <div className="col-span-5 flex items-center gap-2">
                   <GraduationCap size={15} className="text-primary dark:text-dark-primary" />
                   <span>Alumni Name</span>

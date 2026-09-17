@@ -31,18 +31,10 @@ const UserDashboard = ({ defaultType }) => {
         [isAdmin]
     );
 
-    const [selectedType, setSelectedType] = useState(() => {
-        if (defaultType && (defaultType === "Alumni" || userType.includes(defaultType))) {
-            return defaultType;
-        }
-        const saved = localStorage.getItem("admin_user_slider");
-        return userType.includes(saved) ? saved : userType[0];
-    });
+    const [selectedType, setSelectedType] = useState(defaultType || userType[0]);
 
     useEffect(() => {
-        if (defaultType && userType.includes(defaultType)) {
-            setSelectedType(defaultType);
-        }
+        setSelectedType(defaultType || userType[0]);
     }, [defaultType, userType]);
 
     const curr = userType.includes(selectedType) ? selectedType : userType[0];
@@ -51,10 +43,6 @@ const UserDashboard = ({ defaultType }) => {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-
-    useEffect(() => {
-        localStorage.setItem("admin_user_slider", curr);
-    }, [curr]);
 
     const [openMenu, setOpenMenu] = useState(null);
     const [openAddModal, setOpenAddModal] = useState(false);

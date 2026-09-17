@@ -13,7 +13,8 @@ const Careers = () => {
   const [registrationOpen, setRegistrationOpen] = useState(true);
   const [statusLoading, setStatusLoading] = useState(true);
 
-  const { form, loading, submitted, handleChange, handleSubmit } = useCareersForm();
+  const careerFormProps = useCareersForm();
+  const { submitted } = careerFormProps;
 
   useEffect(() => {
     const fetchRegistrationStatus = async () => {
@@ -72,12 +73,7 @@ const Careers = () => {
       ) : submitted ? (
         <CareersSuccess />
       ) : (
-        <CareersForm
-          form={form}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          loading={loading}
-        />
+        <CareersForm {...careerFormProps} />
       )}
     </Layout>
   );

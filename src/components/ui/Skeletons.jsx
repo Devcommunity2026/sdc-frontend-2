@@ -125,7 +125,7 @@ export const AlumniListSkeleton = ({ count = 7 }) => {
   return (
     <div className="max-w-4xl mx-auto space-y-2.5">
       {/* Header Skeleton */}
-      <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-3.5 mb-3 rounded-xl border border-border/60 dark:border-dark-border/60 bg-secondary/70 dark:bg-dark-secondary/70">
+      <div className="hidden sm:grid grid-cols-12 gap-4 px-6 py-3.5 mb-3 rounded-xl border border-border/80 dark:border-dark-border/60 bg-card/80 dark:bg-dark-card/70 backdrop-blur-sm">
         <div className="col-span-5 h-3.5 w-24 rounded bg-muted/70 dark:bg-dark-muted/70" />
         <div className="col-span-4 h-3.5 w-20 rounded bg-muted/70 dark:bg-dark-muted/70" />
         <div className="col-span-3 h-3.5 w-24 rounded bg-muted/70 dark:bg-dark-muted/70 sm:ml-auto" />
