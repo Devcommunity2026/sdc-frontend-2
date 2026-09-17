@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Send,
   UploadCloud,
@@ -8,12 +8,10 @@ import {
   AlertCircle,
   Clock,
   RefreshCw,
-  FileText,
   ShieldCheck,
   ExternalLink,
   Loader2,
   KeyRound,
-  X
 } from "lucide-react";
 import Button from "../ui/Button";
 import { applicationDomain } from "../../data/mockData";
@@ -23,7 +21,10 @@ const CareersForm = ({
   form,
   loading,
   handleChange,
+  handleBlur,
   handleSubmit,
+  errors = {},
+  touched = {},
   // Resume props
   resumeFile,
   resumeUploading,
@@ -46,23 +47,53 @@ const CareersForm = ({
 }) => {
   const fileInputRef = useRef(null);
 
-  const inputClass = `
-    w-full rounded-xl px-4 py-3 text-sm transition-all outline-none
-    bg-background text-foreground placeholder:text-muted-foreground
-    border border-border
-    focus:ring-2 focus:ring-primary/30 focus:border-primary
-    dark:bg-dark-background
-    dark:text-dark-foreground
-    dark:placeholder:text-dark-muted-foreground
-    dark:border-dark-border
-    dark:focus:ring-dark-primary/30
-    dark:focus:border-dark-primary
-  `;
+  const getInputClass = (fieldName) => {
+    const hasError = Boolean(touched?.[fieldName] && errors?.[fieldName]);
+    return `
+      w-full h-11 rounded-xl px-4 text-sm transition-all outline-none
+      bg-background text-foreground placeholder:text-muted-foreground
+      border ${
+        hasError
+          ? "border-destructive dark:border-rose-500 focus:ring-2 focus:ring-destructive/30 focus:border-destructive"
+          : "border-border focus:ring-2 focus:ring-primary/30 focus:border-primary"
+      }
+      dark:bg-dark-background
+      dark:text-dark-foreground
+      dark:placeholder:text-dark-muted-foreground
+      dark:border-dark-border
+    `;
+  };
+
+  const getTextareaClass = (fieldName) => {
+    const hasError = Boolean(touched?.[fieldName] && errors?.[fieldName]);
+    return `
+      w-full rounded-xl p-4 text-sm transition-all outline-none resize-none
+      bg-background text-foreground placeholder:text-muted-foreground
+      border ${
+        hasError
+          ? "border-destructive dark:border-rose-500 focus:ring-2 focus:ring-destructive/30 focus:border-destructive"
+          : "border-border focus:ring-2 focus:ring-primary/30 focus:border-primary"
+      }
+      dark:bg-dark-background
+      dark:text-dark-foreground
+      dark:placeholder:text-dark-muted-foreground
+      dark:border-dark-border
+    `;
+  };
 
   const labelClass = `
-    block mb-2 font-medium text-sm
-    text-foreground dark:text-dark-foreground
+    font-medium text-sm text-foreground dark:text-dark-foreground
   `;
+
+  const renderFieldError = (fieldName) => {
+    if (!touched?.[fieldName] || !errors?.[fieldName]) return null;
+    return (
+      <p className="text-xs text-destructive dark:text-rose-400 mt-1.5 flex items-center gap-1.5 font-medium">
+        <AlertCircle size={13} className="shrink-0" />
+        <span>{errors[fieldName]}</span>
+      </p>
+    );
+  };
 
   const onFileInput = (e) => {
     const file = e.target.files?.[0];
@@ -112,28 +143,35 @@ const CareersForm = ({
 
             <div className="grid sm:grid-cols-2 gap-5 text-left">
               <div>
-                <label className={labelClass}>Full Name *</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Full Name *</label>
+                </div>
                 <input
                   name="name"
                   required
                   value={form.name}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.name && errors?.name)}
+                  className={getInputClass("name")}
                   placeholder="John Doe"
                 />
+                {renderFieldError("name")}
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="font-medium text-sm text-foreground dark:text-dark-foreground">
-                    Email Address *
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>
+                    College Email *
                   </label>
                   {otpVerified ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 shrink-0">
                       <ShieldCheck size={14} /> Verified
                     </span>
                   ) : (
-                    <span className="text-xs text-amber-500 font-medium">Verification Required</span>
+                    <span className="inline-flex items-center text-xs text-amber-500 font-medium shrink-0 whitespace-nowrap">
+                      Verification Required
+                    </span>
                   )}
                 </div>
                 <input
@@ -142,56 +180,61 @@ const CareersForm = ({
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className={`${inputClass} ${otpVerified ? "border-emerald-500/50 bg-emerald-50/10" : ""}`}
-                  placeholder="john@email.com"
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.email && errors?.email)}
+                  className={`${getInputClass("email")} ${otpVerified ? "border-emerald-500/50 bg-emerald-50/10" : ""}`}
+                  placeholder="en23cs301562@medicaps.ac.in"
                 />
+                {renderFieldError("email")}
               </div>
 
               <div>
-                <label className={labelClass}>Phone Number *</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Phone Number *</label>
+                </div>
                 <input
                   name="phone"
                   type="tel"
                   required
                   value={form.phone}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.phone && errors?.phone)}
+                  className={getInputClass("phone")}
                   placeholder="+91 9876543210"
                 />
+                {renderFieldError("phone")}
               </div>
 
               <div>
-                <label className={labelClass}>College / University *</label>
-                <input
-                  name="college"
-                  required
-                  value={form.college}
-                  onChange={handleChange}
-                  className={inputClass}
-                  placeholder="Medi-Caps University"
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>Branch / Specialization *</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Branch / Specialization *</label>
+                </div>
                 <input
                   name="branch"
                   required
                   value={form.branch}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.branch && errors?.branch)}
+                  className={getInputClass("branch")}
                   placeholder="CSE / IT / ECE"
                 />
+                {renderFieldError("branch")}
               </div>
 
               <div>
-                <label className={labelClass}>Current Academic Year *</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Current Academic Year *</label>
+                </div>
                 <select
                   name="year"
                   required
                   value={form.year}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.year && errors?.year)}
+                  className={getInputClass("year")}
                 >
                   <option value="">Select Year</option>
                   <option value="1">1st Year</option>
@@ -199,80 +242,106 @@ const CareersForm = ({
                   <option value="3">3rd Year</option>
                   <option value="4">4th Year</option>
                 </select>
+                {renderFieldError("year")}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Domain Applied For *</label>
+                </div>
+                <select
+                  name="domain"
+                  required
+                  value={form.domain}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.domain && errors?.domain)}
+                  className={getInputClass("domain")}
+                >
+                  <option value="">Select Domain</option>
+                  {applicationDomain.map((element, index) => (
+                    <option key={index} value={element}>
+                      {element}
+                    </option>
+                  ))}
+                </select>
+                {renderFieldError("domain")}
               </div>
             </div>
 
             <div className="text-left">
-              <label className={labelClass}>Technical Skills * (comma separated)</label>
+              <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                <label className={labelClass}>Technical Skills * (comma separated)</label>
+              </div>
               <input
                 name="skills"
                 required
                 value={form.skills}
                 onChange={handleChange}
-                className={inputClass}
+                onBlur={handleBlur}
+                data-has-error={Boolean(touched?.skills && errors?.skills)}
+                className={getInputClass("skills")}
                 placeholder="React, Node.js, Python, TypeScript, MongoDB"
               />
+              {renderFieldError("skills")}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5 text-left">
               <div>
-                <label className={labelClass}>GitHub Profile</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>GitHub Profile</label>
+                </div>
                 <input
                   name="github"
                   value={form.github}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.github && errors?.github)}
+                  className={getInputClass("github")}
                   placeholder="https://github.com/username"
                 />
+                {renderFieldError("github")}
               </div>
 
               <div>
-                <label className={labelClass}>LinkedIn Profile</label>
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>LinkedIn Profile</label>
+                </div>
                 <input
                   name="linkedin"
                   value={form.linkedin}
                   onChange={handleChange}
-                  className={inputClass}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.linkedin && errors?.linkedin)}
+                  className={getInputClass("linkedin")}
                   placeholder="https://linkedin.com/in/username"
                 />
+                {renderFieldError("linkedin")}
               </div>
             </div>
 
             <div className="text-left">
-              <label className={labelClass}>Position / Domain Applied For *</label>
-              <select
-                name="domain"
-                required
-                value={form.domain}
-                onChange={handleChange}
-                className={inputClass}
-              >
-                <option value="">Select Domain</option>
-                {applicationDomain.map((element, index) => (
-                  <option key={index} value={element}>
-                    {element}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="text-left">
-              <label className={labelClass}>
-                Why do you want to join? *
-              </label>
+              <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                <label className={labelClass}>
+                  Why do you want to join? *
+                </label>
+              </div>
               <textarea
                 name="motivation"
                 required
                 value={form.motivation}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                data-has-error={Boolean(touched?.motivation && errors?.motivation)}
                 rows={4}
-                className={`${inputClass} resize-none`}
+                className={getTextareaClass("motivation")}
                 placeholder="Tell us about your interests, past projects, and why you want to be part of SDC..."
               />
+              {renderFieldError("motivation")}
             </div>
           </div>
 
-          {/* Section 2: Resume Upload (Cloudinary folder: resume) */}
+          {/* Section 2: Resume Upload */}
           <div className="space-y-4 text-left">
             <div className="flex items-center justify-between border-b border-border dark:border-dark-border pb-2">
               <h3 className="text-base font-semibold text-foreground dark:text-dark-foreground">
@@ -310,10 +379,10 @@ const CareersForm = ({
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <Loader2 size={36} className="animate-spin text-primary dark:text-dark-primary" />
                     <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-                      Uploading resume to Cloudinary...
+                      Uploading resume...
                     </p>
                     <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
-                      Saving into Cloudinary resume folder
+                      Processing your document, please wait...
                     </p>
                   </div>
                 ) : (
@@ -343,7 +412,7 @@ const CareersForm = ({
                       {resumeFile?.name || "Uploaded Resume.pdf"}
                     </p>
                     <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground flex items-center gap-1.5 mt-0.5">
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Uploaded to Cloudinary (resume/)</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Resume uploaded successfully</span>
                       {resumeFile?.size && (
                         <span>• {(resumeFile.size / (1024 * 1024)).toFixed(2)} MB</span>
                       )}
@@ -418,7 +487,7 @@ const CareersForm = ({
                       Verify Your Email Address
                     </p>
                     <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground mt-0.5">
-                      We will send a 6-digit OTP to <strong>{form.email || "your email address"}</strong>
+                      We will send a 6-digit OTP to <strong>{form.email || "your @medicaps.ac.in email"}</strong>
                     </p>
                   </div>
 
@@ -502,11 +571,6 @@ const CareersForm = ({
                           </span>
                         )}
                       </button>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground dark:text-dark-muted-foreground">
-                      <Clock size={13} />
-                      <span>The OTP is valid for 5 minutes. Check your spam folder if not received.</span>
                     </div>
                   </div>
                 )}
