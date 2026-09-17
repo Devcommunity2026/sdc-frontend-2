@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../components/ui/Button";
 import AuthPageLayout from "../components/AuthPageLayout";
 import { handelLogin } from "../controllers/loginRequest";
@@ -7,16 +7,20 @@ import { useAuth } from "../contexts/AuthProvider";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth()
+  const location = useLocation();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const redirectMessage = location.state?.message;
+  const redirectTo = location.state?.from;
+
   const handleSubmit = async (e) => {
     setLoading(true);
     try {
-      await handelLogin(e, email, password, login,navigate);
+      await handelLogin(e, email, password, login, navigate, redirectTo);
     } finally {
       setLoading(false);
     }
@@ -28,6 +32,12 @@ const Login = () => {
       heading2="Back"
       subtext="Login to continue your journey with the community"
     >
+      {redirectMessage && (
+        <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-center text-sm font-semibold text-amber-600 dark:text-amber-400 shadow-sm">
+          {redirectMessage}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"

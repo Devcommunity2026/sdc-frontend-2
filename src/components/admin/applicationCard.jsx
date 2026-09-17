@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Mail, Phone, GraduationCap, Code2, FileText, CheckCircle2, Clock3, XCircle, Loader2 } from "lucide-react";
-import { handleStateChange } from '../../controllers/admin/ApplicationDashBoard'
+import { Mail, Phone, GraduationCap, Code2, FileText, CheckCircle2, Clock3, XCircle, Trash2, Loader2 } from "lucide-react";
+import { handleStateChange, handleDeleteApplication } from '../../controllers/admin/ApplicationDashBoard';
 
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -11,8 +11,18 @@ const statusColors = {
     Rejected: "bg-danger/10 text-danger dark:bg-dark-danger/20 dark:text-dark-danger",
 };
 
-const ApplicationCard = ({ application, curr }) => {
+const ApplicationCard = ({ application, curr, onDelete }) => {
     const [loading, setLoading] = useState("");
+
+    const handleDeleteClick = async () => {
+        const applicantName = application?.name ? ` for "${application.name}"` : "";
+        const confirmed = window.confirm(
+            `Are you sure you want to permanently delete this rejected application${applicantName}? This will remove it completely from the database and cannot be undone.`
+        );
+        if (!confirmed) return;
+
+        await handleDeleteApplication(application?._id || application, setLoading, onDelete);
+    };
 
 
     return (
@@ -112,18 +122,38 @@ const ApplicationCard = ({ application, curr }) => {
                     </a>
 
                     {/* RESUME */}
-                    <a
-                        href={application?.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 rounded-xl border border-border bg-background p-4 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
-                    >
-                        <FileText size={20} className="text-foreground dark:text-dark-foreground" />
-                        <div>
-                            <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">Resume</p>
-                            <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">Open Resume</p>
+                    {(application?.resumeUrl || application?.resume) ? (
+                        <div className="flex flex-col justify-between gap-2 rounded-xl border border-border bg-background p-3.5 dark:border-dark-border dark:bg-dark-background">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <FileText size={18} className="text-primary dark:text-dark-primary shrink-0" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-semibold text-foreground dark:text-dark-foreground truncate" title={application?.resumeOriginalName || "Resume"}>
+                                        {application?.resumeOriginalName || "Resume Document"}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
+                                        Uploaded Document
+                                    </p>
+                                </div>
+                            </div>
+                            <a
+                                href={application?.resumeUrl || application?.resume}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-1 flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground dark:bg-dark-primary/20 dark:text-dark-primary dark:hover:bg-dark-primary dark:hover:text-dark-primary-foreground"
+                            >
+                                <FileText size={13} /> View Resume
+                            </a>
                         </div>
-                    </a>
+                    ) : (
+                        <div className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-background/50 p-4 opacity-70 dark:border-dark-border dark:bg-dark-background/50">
+                            <FileText size={20} className="text-muted-foreground dark:text-dark-muted-foreground" />
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground dark:text-dark-muted-foreground">
+                                    Resume not uploaded
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -134,7 +164,7 @@ const ApplicationCard = ({ application, curr }) => {
                 {curr !== "Selected" && (
                     <button
                         disabled={loading != ""}
-                        onClick={() => handleStateChange("Selected", application, setLoading)}
+                        onClick={() => handleStateChange("Selected", application?._id || application, setLoading)}
                         className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-success px-5 py-2.5 text-sm font-medium text-success-foreground transition-all duration-200 hover:bg-success-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-success dark:hover:bg-dark-success-hover sm:flex-none"
                     >
                         {loading == "Selected" ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
@@ -146,7 +176,7 @@ const ApplicationCard = ({ application, curr }) => {
                 {curr !== "On Hold" && (
                     <button
                         disabled={loading != ""}
-                        onClick={() => handleStateChange("On Hold", application, setLoading)}
+                        onClick={() => handleStateChange("On Hold", application?._id || application, setLoading)}
                         className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-warning px-5 py-2.5 text-sm font-medium text-warning-foreground transition-all duration-200 hover:bg-warning-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-warning dark:hover:bg-dark-warning-hover sm:flex-none"
                     >
                         {loading == "On Hold" ? <Loader2 size={18} className="animate-spin" /> : <Clock3 size={18} />}
@@ -158,11 +188,23 @@ const ApplicationCard = ({ application, curr }) => {
                 {curr !== "Rejected" && (
                     <button
                         disabled={loading != ""}
-                        onClick={() => handleStateChange("Rejected", application, setLoading)}
+                        onClick={() => handleStateChange("Rejected", application?._id || application, setLoading)}
                         className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-danger px-5 py-2.5 text-sm font-medium text-danger-foreground transition-all duration-200 hover:bg-danger-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-danger dark:hover:bg-dark-danger-hover sm:flex-none"
                     >
                         {loading == "Rejected" ? <Loader2 size={18} className="animate-spin" /> : <XCircle size={18} />}
                         {loading == "Rejected" ? "Updating..." : "Reject"}
+                    </button>
+                )}
+
+                {/* DELETE (Only for Rejected applications) */}
+                {(curr === "Rejected" || application?.status === "Rejected") && (
+                    <button
+                        disabled={loading != ""}
+                        onClick={handleDeleteClick}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-danger px-5 py-2.5 text-sm font-medium text-danger-foreground transition-all duration-200 hover:bg-danger-hover disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-danger dark:hover:bg-dark-danger-hover sm:flex-none"
+                    >
+                        {loading == "Deleting" ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                        {loading == "Deleting" ? "Deleting..." : "Delete"}
                     </button>
                 )}
             </div>

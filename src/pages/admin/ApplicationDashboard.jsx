@@ -117,7 +117,10 @@ const ApplicationDashboard = () => {
     // ================= RESET PAGE =================
     useEffect(() => { setPage(1); }, [domain, curr]);
 
-
+    const handleDeleteSuccess = (deletedId) => {
+        setApplications((prev) => prev.filter((app) => app._id !== deletedId));
+        setTotalApplications((prev) => Math.max(0, prev - 1));
+    };
 
     return (
         <AdminLayout>
@@ -250,6 +253,7 @@ const ApplicationDashboard = () => {
                                         key={application._id}
                                         application={application}
                                         curr={curr}
+                                        onDelete={handleDeleteSuccess}
                                     />
                                 ))}
                             </div>

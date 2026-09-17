@@ -1,11 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Send } from "lucide-react";
+import { Send, UploadCloud, FileText, Trash2 } from "lucide-react";
 import Button from "../ui/Button";
 import { applicationDomain } from "../../data/mockData";
 import { EASE_OUT } from "../../libs/motion";
 
-const CareersForm = ({ form, handleChange, handleSubmit, loading }) => {
+const CareersForm = ({
+  form,
+  handleChange,
+  handleFileChange,
+  removeFile,
+  handleSubmit,
+  loading,
+  user
+}) => {
   const inputClass = `
     w-full rounded-xl px-4 py-3 text-sm transition-all outline-none
     bg-background text-foreground placeholder:text-muted-foreground
@@ -163,17 +171,90 @@ const CareersForm = ({ form, handleChange, handleSubmit, loading }) => {
             </div>
           </div>
 
-          <div className="text-left">
-            <label className={labelClass}>Resume Link *</label>
-            <input
-              type="url"
-              name="resume"
-              required
-              value={form.resume}
-              onChange={handleChange}
-              className={inputClass}
-              placeholder="https://drive.google.com/..."
-            />
+          {/* RESUME FILE UPLOAD */}
+          <div className="text-left space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+              <label className={labelClass}>Upload Resume (PDF, DOC, DOCX up to 5MB) *</label>
+              {!form.resumeFile && (form.college || form.skills || form.motivation) && (
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium pb-2 sm:pb-0">
+                  Please select your resume file to proceed
+                </span>
+              )}
+            </div>
+
+            {!form.resumeFile ? (
+              <label
+                htmlFor="resume-upload"
+                className="group flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all border-border bg-background hover:bg-secondary/40 hover:border-primary/50 dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary/40 dark:hover:border-dark-primary/50"
+              >
+                <div className="flex flex-col items-center justify-center space-y-2 text-center">
+                  <div className="p-3 rounded-full bg-primary/10 text-primary dark:bg-dark-primary/20 dark:text-dark-primary transition-transform group-hover:scale-110">
+                    <UploadCloud size={24} />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">
+                    Click to browse or drag and drop your resume
+                  </p>
+                  <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
+                    Accepted formats: PDF, DOC, DOCX (Max size: 5 MB)
+                  </p>
+                </div>
+                <input
+                  id="resume-upload"
+                  type="file"
+                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileChange(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+              </label>
+            ) : (
+              <div className="flex items-center justify-between p-4 rounded-xl border border-primary/30 bg-primary/5 dark:border-dark-primary/30 dark:bg-dark-primary/10">
+                <div className="flex items-center space-x-3 truncate">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary dark:bg-dark-primary/20 dark:text-dark-primary shrink-0">
+                    <FileText size={22} />
+                  </div>
+                  <div className="truncate text-left">
+                    <p className="text-sm font-medium text-foreground dark:text-dark-foreground truncate">
+                      {form.resumeFile.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
+                      {(form.resumeFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 shrink-0">
+                  <label
+                    htmlFor="resume-upload-replace"
+                    className="text-xs px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-secondary cursor-pointer font-medium text-white dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
+                  >
+                    Replace
+                    <input
+                      id="resume-upload-replace"
+                      type="file"
+                      accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleFileChange(e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={removeFile}
+                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors"
+                    title="Remove file"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="text-left">
