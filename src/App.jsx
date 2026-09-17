@@ -16,6 +16,7 @@ import Projects from "./pages/Projects";
 import Events from "./pages/Events";
 import Register from "./pages/Register";
 import Verify from "./pages/Verify";
+import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOTP from "./pages/VerifyOTP";
 import ResetPassword from "./pages/ResetPassword";
@@ -117,6 +118,11 @@ function App() {
                     <Verify />
                   </PublicRoute>
                 }
+              />
+
+              <Route
+                path="/verify-email"
+                element={<VerifyEmail />}
               />
 
               {/* Example Protected Route */}

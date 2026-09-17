@@ -1,5 +1,6 @@
 // sdc/sdc-frontend/src/contexts/AuthProvider.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -29,8 +30,23 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("isLoggedIn");
   };
 
+  const refreshUser = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const res = await axios.get(`${API_URL}/auth/me`, { withCredentials: true });
+      if (res.data.success && res.data.user) {
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        return res.data.user;
+      }
+    } catch (err) {
+      console.error("Failed to refresh user:", err);
+    }
+    return null;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, PageLoading, setPageLoading, setUser }}>
+    <AuthContext.Provider value={{ user, login, logout, refreshUser, PageLoading, setPageLoading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

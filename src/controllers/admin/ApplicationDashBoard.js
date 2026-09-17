@@ -68,11 +68,12 @@ export const handleStateChange = async (
     setLoading
 ) => {
     try {
+        const id = applicationId?._id || applicationId;
         setLoading(status);
 
         const response = await axios.post(
             `${API_URL}/edit/application`,
-            { id: applicationId, status },
+            { id, status },
             { withCredentials: true }
         );
 
@@ -88,3 +89,45 @@ export const handleStateChange = async (
         setLoading("");
     }
 };
+
+export const handleDeleteApplication = async (
+    applicationId,
+    setLoading,
+    onSuccess
+) => {
+    try {
+        const id = (typeof applicationId === "object" && applicationId !== null)
+            ? (applicationId._id || applicationId.id)
+            : applicationId;
+
+        if (!id) {
+            alert("No valid application ID provided");
+            return;
+        }
+
+        setLoading("Deleting");
+
+        const response = await axios.post(
+            `${API_URL}/edit/removeApplication`,
+            { id, applicationId: id },
+            { withCredentials: true }
+        );
+
+        if (response.data.success) {
+            if (onSuccess) {
+                onSuccess(id);
+            }
+        } else {
+            alert(response.data.message || "Failed to delete application");
+        }
+    } catch (error) {
+        console.error("Delete application error:", error);
+        alert(
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed To Delete Application"
+        );
+    } finally {
+        setLoading("");
+    }
+};

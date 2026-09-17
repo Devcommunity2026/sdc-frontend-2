@@ -1,7 +1,7 @@
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const handelLogin = async (e, email, password, login, navigate) => {
+export const handelLogin = async (e, email, password, login, navigate, redirectTo) => {
     e.preventDefault();
 
     try {
@@ -17,7 +17,9 @@ export const handelLogin = async (e, email, password, login, navigate) => {
             console.log(res.data.user.role)
             if (['admin', 'moderator'].includes(res.data.user.role)) {
                 navigate("/admin/user");
-            }else{
+            } else if (redirectTo) {
+                navigate(redirectTo);
+            } else {
                 navigate("/");
             }
         }
