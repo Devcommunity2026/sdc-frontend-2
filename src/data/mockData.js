@@ -12,6 +12,8 @@ export const applicationDomain = [
     "AI / Machine Learning",
     "Cybersecurity",
     "Mobile App Development",
+    "HR",
+    "Graphics",
   ]
 export const domains = [
   {
