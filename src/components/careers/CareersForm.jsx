@@ -318,6 +318,22 @@ const CareersForm = ({
                 />
                 {renderFieldError("linkedin")}
               </div>
+
+              <div className="sm:col-span-2">
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[22px]">
+                  <label className={labelClass}>Portfolio Link (Optional)</label>
+                </div>
+                <input
+                  name="portfolio"
+                  value={form.portfolio}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  data-has-error={Boolean(touched?.portfolio && errors?.portfolio)}
+                  className={getInputClass("portfolio")}
+                  placeholder="https://myportfolio.com"
+                />
+                {renderFieldError("portfolio")}
+              </div>
             </div>
 
             <div className="text-left">
