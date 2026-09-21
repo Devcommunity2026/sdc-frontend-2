@@ -11,7 +11,8 @@ import {
     Loader2,
     Trash2,
     ExternalLink,
-    Calendar
+    Calendar,
+    Globe
 } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
@@ -191,6 +192,22 @@ const ApplicationCard = ({
                             <div className="flex items-center gap-2.5">
                                 <FaLinkedin size={18} className="text-foreground dark:text-dark-foreground" />
                                 <span className="text-xs font-medium text-foreground dark:text-dark-foreground">LinkedIn</span>
+                            </div>
+                            <ExternalLink size={13} className="text-muted-foreground" />
+                        </a>
+                    ) : null}
+
+                    {/* PORTFOLIO */}
+                    {application?.portfolio ? (
+                        <a
+                            href={application?.portfolio}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between rounded-xl border border-border bg-background p-3 transition-all duration-200 hover:bg-secondary dark:border-dark-border dark:bg-dark-background dark:hover:bg-dark-secondary"
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <Globe size={18} className="text-foreground dark:text-dark-foreground" />
+                                <span className="text-xs font-medium text-foreground dark:text-dark-foreground">Portfolio</span>
                             </div>
                             <ExternalLink size={13} className="text-muted-foreground" />
                         </a>

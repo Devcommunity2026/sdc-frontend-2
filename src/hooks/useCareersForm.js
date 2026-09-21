@@ -11,6 +11,7 @@ const initialForm = {
   skills: "",
   github: "",
   linkedin: "",
+  portfolio: "",
   domain: "",
   motivation: "",
   resume: "",
@@ -95,6 +96,14 @@ export const validateField = (fieldName, val, currentForm = {}) => {
       const trimmed = value.trim();
       if (!/^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_.-]+\/?$/i.test(trimmed)) {
         return "Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username).";
+      }
+      return "";
+    }
+    case "portfolio": {
+      if (!value.trim()) return "";
+      const trimmed = value.trim();
+      if (!/^(https?:\/\/)?([\w.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i.test(trimmed)) {
+        return "Please enter a valid URL (e.g. https://myportfolio.com).";
       }
       return "";
     }
@@ -202,7 +211,7 @@ export const useCareersForm = () => {
       } else if (!err) {
         setErrors((prev) => ({ ...prev, [name]: "" }));
       }
-    } else if (name === "github" || name === "linkedin") {
+    } else if (name === "github" || name === "linkedin" || name === "portfolio") {
       if (value.trim() && err) {
         setTouched((prev) => ({ ...prev, [name]: true }));
         setErrors((prev) => ({ ...prev, [name]: err }));
@@ -235,6 +244,7 @@ export const useCareersForm = () => {
       "skills",
       "github",
       "linkedin",
+      "portfolio",
       "domain",
       "motivation",
     ];

@@ -29,6 +29,7 @@ import PublicRoute from "./components/PublicRoute";
 import SecureRoute from "./components/SecureRoute";
 import NoAccess from "./components/NoAccess";
 import ScrollToTop from "./components/ScrollToTop";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -131,6 +132,8 @@ function App() {
               />
               */}
 
+              {/* Catch-all Not Found Route */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
 
           </>
