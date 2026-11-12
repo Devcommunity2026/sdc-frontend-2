@@ -18,6 +18,10 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Ban,
+  RotateCcw,
+  Trash2,
+  X,
 } from "lucide-react";
 import Button from "../../components/ui/Button";
 
@@ -44,6 +48,7 @@ const CertificateDashboard = () => {
 
   // Custom PDF State
   const [customFile, setCustomFile] = useState(null);
+  const [customUploadProgress, setCustomUploadProgress] = useState(0);
   const customFileInputRef = useRef(null);
 
   // Status & Feedback State
@@ -57,6 +62,10 @@ const CertificateDashboard = () => {
   const [listLoading, setListLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [statusUpdatingId, setStatusUpdatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmDeleteCert, setConfirmDeleteCert] = useState(null);
+  const [registryFeedback, setRegistryFeedback] = useState(null);
 
   const fetchCertificatesList = async () => {
     try {
@@ -78,6 +87,74 @@ const CertificateDashboard = () => {
       fetchCertificatesList();
     }
   }, [activeTab, typeFilter]);
+
+  const handleToggleCertificateStatus = async (cert) => {
+    const nextStatus = cert.status === "revoked" ? "valid" : "revoked";
+    setStatusUpdatingId(cert.certificateId);
+    setRegistryFeedback(null);
+
+    try {
+      const res = await axios.patch(
+        `${API_URL}/api/certificates/${encodeURIComponent(cert.certificateId)}/status`,
+        { status: nextStatus },
+        { withCredentials: true }
+      );
+
+      if (res.data?.success) {
+        setCertificatesList((prev) =>
+          prev.map((item) =>
+            item.certificateId === cert.certificateId ? { ...item, status: nextStatus } : item
+          )
+        );
+        setRegistryFeedback({
+          type: "success",
+          message:
+            res.data.message ||
+            (nextStatus === "revoked"
+              ? `Validation cancelled for ${cert.certificateId}.`
+              : `Certificate ${cert.certificateId} is valid again.`),
+        });
+      }
+    } catch (err) {
+      setRegistryFeedback({
+        type: "error",
+        message: err.response?.data?.message || "Failed to update certificate status.",
+      });
+    } finally {
+      setStatusUpdatingId(null);
+    }
+  };
+
+  const handleDeleteCertificate = async (cert) => {
+    if (!cert) return;
+    setDeletingId(cert.certificateId);
+    setRegistryFeedback(null);
+
+    try {
+      const res = await axios.delete(
+        `${API_URL}/api/certificates/${encodeURIComponent(cert.certificateId)}`,
+        { withCredentials: true }
+      );
+
+      if (res.data?.success) {
+        setCertificatesList((prev) =>
+          prev.filter((item) => item.certificateId !== cert.certificateId)
+        );
+        setConfirmDeleteCert(null);
+        setRegistryFeedback({
+          type: "success",
+          message: res.data.message || `Certificate ${cert.certificateId} deleted permanently.`,
+        });
+      }
+    } catch (err) {
+      setRegistryFeedback({
+        type: "error",
+        message: err.response?.data?.message || "Failed to delete certificate.",
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // ================= 1. SINGLE GENERATION =================
   const handleSingleSubmit = async (e) => {
@@ -186,6 +263,7 @@ const CertificateDashboard = () => {
     }
 
     setIsLoading(true);
+    setCustomUploadProgress(0);
     const formData = new FormData();
     formData.append("holderName", holderName.trim());
     formData.append("courseOrTitle", courseOrTitle.trim());
@@ -200,12 +278,20 @@ const CertificateDashboard = () => {
       const res = await axios.post(`${API_URL}/api/certificates`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setCustomUploadProgress(Math.min(percent, 95));
+          }
+        },
       });
 
       if (res.data.success) {
+        setCustomUploadProgress(100);
         setCreatedResult(res.data.data);
       }
     } catch (err) {
+      setCustomUploadProgress(0);
       setApiError(err.response?.data?.message || "Failed to upload custom certificate.");
     } finally {
       setIsLoading(false);
@@ -227,6 +313,7 @@ const CertificateDashboard = () => {
     setCertificateId("");
     setEndDate("");
     setCustomFile(null);
+    setCustomUploadProgress(0);
     setApiError("");
   };
 
@@ -726,6 +813,26 @@ const CertificateDashboard = () => {
               </div>
             </div>
 
+            {registryFeedback && (
+              <div
+                className={`p-3.5 rounded-2xl border text-xs flex items-center justify-between gap-3 ${
+                  registryFeedback.type === "error"
+                    ? "bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400"
+                    : "bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-300"
+                }`}
+              >
+                <span className="font-medium">{registryFeedback.message}</span>
+                <button
+                  type="button"
+                  onClick={() => setRegistryFeedback(null)}
+                  className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer"
+                  aria-label="Dismiss message"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
             {listLoading ? (
               <div className="py-12 text-center text-muted-foreground text-xs animate-pulse">
                 Loading credential registry records...
@@ -773,22 +880,67 @@ const CertificateDashboard = () => {
                             {cert.status || "valid"}
                           </span>
                         </td>
-                        <td className="py-3 px-3 text-right space-x-2">
-                          <a
-                            href={cert.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-primary dark:text-dark-primary hover:underline font-semibold"
-                          >
-                            PDF <ExternalLink size={11} className="ml-0.5" />
-                          </a>
-                          <Link
-                            to={`/certificates/${cert.certificateId}`}
-                            target="_blank"
-                            className="inline-flex items-center text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
-                          >
-                            Verify
-                          </Link>
+                        <td className="py-3 px-3 text-right">
+                          <div className="inline-flex items-center justify-end gap-2 flex-wrap">
+                            <a
+                              href={cert.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-primary dark:text-dark-primary hover:underline font-semibold"
+                            >
+                              PDF <ExternalLink size={11} className="ml-0.5" />
+                            </a>
+                            <Link
+                              to={`/certificates/${cert.certificateId}`}
+                              target="_blank"
+                              className="inline-flex items-center text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+                            >
+                              Verify
+                            </Link>
+                            <button
+                              type="button"
+                              disabled={statusUpdatingId === cert.certificateId || deletingId === cert.certificateId}
+                              onClick={() => handleToggleCertificateStatus(cert)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer disabled:opacity-50 ${
+                                cert.status === "revoked"
+                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
+                                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 hover:bg-amber-500/20"
+                              }`}
+                              title={
+                                cert.status === "revoked"
+                                  ? "Make certificate valid again"
+                                  : "Cancel certificate validation"
+                              }
+                            >
+                              {cert.status === "revoked" ? (
+                                <>
+                                  <RotateCcw size={11} />
+                                  <span>
+                                    {statusUpdatingId === cert.certificateId ? "Updating..." : "Make Valid"}
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <Ban size={11} />
+                                  <span>
+                                    {statusUpdatingId === cert.certificateId
+                                      ? "Updating..."
+                                      : "Cancel Validation"}
+                                  </span>
+                                </>
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={deletingId === cert.certificateId || statusUpdatingId === cert.certificateId}
+                              onClick={() => setConfirmDeleteCert(cert)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all cursor-pointer disabled:opacity-50"
+                              title="Delete certificate permanently"
+                            >
+                              <Trash2 size={11} />
+                              <span>Delete</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -889,13 +1041,34 @@ const CertificateDashboard = () => {
                   </div>
                 </div>
 
+                {isLoading && (
+                  <div className="space-y-2 p-4 rounded-2xl border border-border dark:border-dark-border bg-secondary/30 dark:bg-dark-secondary/30">
+                    <div className="flex items-center justify-between text-xs font-semibold">
+                      <span className="text-foreground dark:text-dark-foreground">
+                        {customUploadProgress >= 95
+                          ? "Finalizing & saving PDF to cloud..."
+                          : "Uploading PDF..."}
+                      </span>
+                      <span className="font-mono font-bold text-primary dark:text-dark-primary">
+                        {customUploadProgress}%
+                      </span>
+                    </div>
+                    <div className="w-full h-2.5 rounded-full bg-secondary dark:bg-dark-secondary overflow-hidden">
+                      <div
+                        className="h-full bg-primary dark:bg-dark-primary transition-all duration-200 rounded-full"
+                        style={{ width: `${customUploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   disabled={isLoading}
                   className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
                 >
                   <UploadCloud size={18} />
-                  <span>{isLoading ? "Uploading..." : "Upload Certificate PDF"}</span>
+                  <span>{isLoading ? `Uploading... ${customUploadProgress}%` : "Upload Certificate PDF"}</span>
                 </Button>
               </form>
             ) : (
@@ -910,6 +1083,67 @@ const CertificateDashboard = () => {
           </AdminPanel>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteCert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md rounded-3xl bg-card dark:bg-dark-card border border-border dark:border-dark-border p-6 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
+                  <Trash2 size={22} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-foreground dark:text-dark-foreground">
+                    Delete Certificate?
+                  </h3>
+                  <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
+                    This will permanently remove the certificate record and its PDF file.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteCert(null)}
+                disabled={deletingId === confirmDeleteCert.certificateId}
+                className="p-1.5 rounded-xl text-muted-foreground hover:bg-secondary cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-secondary/40 dark:bg-dark-secondary/40 border border-border dark:border-dark-border text-xs space-y-1">
+              <p className="font-bold text-foreground dark:text-dark-foreground">
+                {confirmDeleteCert.holderName}
+              </p>
+              <p className="font-mono text-primary dark:text-dark-primary">
+                {confirmDeleteCert.certificateId}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteCert(null)}
+                disabled={deletingId === confirmDeleteCert.certificateId}
+                className="px-4 py-2 rounded-xl border border-border dark:border-dark-border text-xs font-semibold hover:bg-secondary cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDeleteCertificate(confirmDeleteCert)}
+                disabled={deletingId === confirmDeleteCert.certificateId}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer disabled:opacity-50"
+              >
+                {deletingId === confirmDeleteCert.certificateId
+                  ? "Deleting..."
+                  : "Delete Permanently"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };

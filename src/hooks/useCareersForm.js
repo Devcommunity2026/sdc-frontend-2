@@ -135,6 +135,7 @@ export const useCareersForm = () => {
   // Resume Upload State
   const [resumeFile, setResumeFile] = useState(null);
   const [resumeUploading, setResumeUploading] = useState(false);
+  const [resumeUploadProgress, setResumeUploadProgress] = useState(0);
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [resumeError, setResumeError] = useState("");
 
@@ -286,6 +287,7 @@ export const useCareersForm = () => {
     setResumeError("");
     setResumeFile(file);
     setResumeUploading(true);
+    setResumeUploadProgress(0);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL;
@@ -294,9 +296,16 @@ export const useCareersForm = () => {
 
       const response = await axios.post(`${API_URL}/public/career/upload-resume`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setResumeUploadProgress(Math.min(percent, 95));
+          }
+        },
       });
 
       if (response.data.success) {
+        setResumeUploadProgress(100);
         const readableUrl = response.data.viewUrl ||
           `${API_URL}/public/career/resume-preview?publicId=${encodeURIComponent(response.data.publicId || "")}` ||
           response.data.url;
@@ -319,6 +328,7 @@ export const useCareersForm = () => {
         "Failed to upload resume. Please check your network and try again."
       );
       setResumeUploaded(false);
+      setResumeUploadProgress(0);
     } finally {
       setResumeUploading(false);
     }
@@ -463,6 +473,7 @@ export const useCareersForm = () => {
         setOtpVerified(false);
         setOtpSent(false);
         setResumeUploaded(false);
+      setResumeUploadProgress(0);
         setResumeFile(null);
         setErrors({});
         setTouched({});
@@ -504,6 +515,7 @@ export const useCareersForm = () => {
     // Resume props
     resumeFile,
     resumeUploading,
+    resumeUploadProgress,
     resumeUploaded,
     resumeError,
     handleResumeFileChange,

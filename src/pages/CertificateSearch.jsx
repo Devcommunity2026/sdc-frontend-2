@@ -3,10 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import { Award, Search, ShieldCheck, CheckCircle, ExternalLink } from "lucide-react";
 import Button from "../components/ui/Button";
+import { useAuth } from "../contexts/AuthProvider";
 
 const CertificateSearch = () => {
   const [certId, setCertId] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isAdmin = isLoggedIn && user?.role === "admin";
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -60,19 +64,25 @@ const CertificateSearch = () => {
           </form>
 
           {/* Registry Notice & Admin Link */}
-          <div className="pt-4 border-t border-border dark:border-dark-border flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground dark:text-dark-muted-foreground gap-2">
+          <div
+            className={`pt-4 border-t border-border dark:border-dark-border flex flex-col sm:flex-row items-center text-xs text-muted-foreground dark:text-dark-muted-foreground gap-2 ${
+              isAdmin ? "justify-between" : "justify-center"
+            }`}
+          >
             <span className="flex items-center gap-1.5 font-medium">
               <CheckCircle size={14} className="text-emerald-500" />
               <span>Verifiable Credential Protocol</span>
             </span>
 
-            <Link
-              to="/certificate-admin/login"
-              className="text-primary dark:text-dark-primary hover:underline font-semibold inline-flex items-center gap-1"
-            >
-              <span>Admin Portal</span>
-              <ExternalLink size={13} />
-            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin/certificates"
+                className="text-primary dark:text-dark-primary hover:underline font-semibold inline-flex items-center gap-1"
+              >
+                <span>Admin Portal</span>
+                <ExternalLink size={13} />
+              </Link>
+            )}
           </div>
         </div>
       </section>

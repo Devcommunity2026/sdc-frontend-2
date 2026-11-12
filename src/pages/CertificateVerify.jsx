@@ -22,7 +22,7 @@ import Button from "../components/ui/Button";
 
 const CertificateVerify = () => {
   const { id } = useParams();
-  const [viewState, setViewState] = useState("loading"); // 'loading' | 'found' | 'not_found' | 'error'
+  const [viewState, setViewState] = useState("loading"); // 'loading' | 'found' | 'not_found' | 'revoked' | 'error'
   const [certificate, setCertificate] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [copiedId, setCopiedId] = useState(false);
@@ -43,14 +43,27 @@ const CertificateVerify = () => {
     try {
       const res = await axios.get(`${API_URL}/api/certificates/${encodeURIComponent(id.trim())}`);
       if (res.data && res.data.data) {
-        setCertificate(res.data.data);
-        setViewState("found");
+        if (res.data.data.status === "revoked") {
+          setCertificate(null);
+          setViewState("revoked");
+          setErrorMessage("This certificate's validation has been cancelled by the issuing authority.");
+        } else {
+          setCertificate(res.data.data);
+          setViewState("found");
+        }
       } else {
         setViewState("not_found");
         setErrorMessage("Certificate record not found.");
       }
     } catch (err) {
-      if (err.response && err.response.status === 404) {
+      if (err.response && (err.response.status === 403 || err.response.data?.revoked)) {
+        setCertificate(null);
+        setViewState("revoked");
+        setErrorMessage(
+          err.response?.data?.message ||
+            "This certificate's validation has been cancelled by the issuing authority."
+        );
+      } else if (err.response && err.response.status === 404) {
         setViewState("not_found");
         setErrorMessage("Certificate not found; it may be invalid or the ID might be incorrect.");
       } else {
@@ -164,6 +177,64 @@ const CertificateVerify = () => {
                     <span>Search Another Certificate</span>
                   </Button>
                 </Link>
+              </div>
+            </div>
+          )}
+
+          {/* 2b. Validation Cancelled / Revoked State */}
+          {viewState === "revoked" && (
+            <div className="max-w-xl mx-auto my-20 bg-card dark:bg-dark-card border border-red-500/30 rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-xl">
+              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-red-500/10 text-red-500">
+                <XCircle size={36} />
+              </div>
+              <div>
+                <span className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/20 mb-3">
+                  Validation Cancelled
+                </span>
+                <h2 className="text-2xl font-bold text-foreground dark:text-dark-foreground">
+                  Certificate Validation Unavailable
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground dark:text-dark-muted-foreground max-w-md mx-auto">
+                  {errorMessage}
+                </p>
+                {id && (
+                  <div className="mt-4 inline-block px-4 py-1.5 rounded-xl bg-secondary dark:bg-dark-secondary font-mono text-xs text-foreground dark:text-dark-foreground">
+                    Queried ID: {id}
+                  </div>
+                )}
+              </div>
+              <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                <Link to="/certificates">
+                  <Button className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs">
+                    <Search size={15} />
+                    <span>Search Another Certificate</span>
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* 2c. Service Error State */}
+          {viewState === "error" && (
+            <div className="max-w-xl mx-auto my-20 bg-card dark:bg-dark-card border border-border dark:border-dark-border rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-xl">
+              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-red-500/10 text-red-500">
+                <AlertTriangle size={36} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-foreground dark:text-dark-foreground">
+                  Verification Unavailable
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground dark:text-dark-muted-foreground max-w-md mx-auto">
+                  {errorMessage}
+                </p>
+              </div>
+              <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                <Button
+                  onClick={fetchCertificate}
+                  className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs"
+                >
+                  <span>Try Again</span>
+                </Button>
               </div>
             </div>
           )}
