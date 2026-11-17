@@ -23,6 +23,10 @@ import UserDashboard from "./pages/admin/UserDashboard";
 import ApplicationDashboard from "./pages/admin/ApplicationDashboard";
 import ContentDashboard from "./pages/admin/ContentDashboard";
 import SettingDashboard from "./pages/admin/SettingDashboard";
+import CertificateDashboard from "./pages/admin/CertificateDashboard";
+import CertificateSearch from "./pages/CertificateSearch";
+import CertificateVerify from "./pages/CertificateVerify";
+import CertificateAdminLogin from "./pages/CertificateAdminLogin";
 import Root from "./pages/workspace/root";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -49,10 +53,16 @@ function App() {
               <Route path="/projects" element={<Projects />} />
               <Route path="/events" element={<Events />} />
               <Route path="/pageNotFound" element={<NoAccess />} />
+
+              {/* Certificate Public Routes */}
+              <Route path="/certificates" element={<CertificateSearch />} />
+              <Route path="/certificates/:id" element={<CertificateVerify />} />
+
+              {/* Admin Routes */}
               <Route path="/admin/user" element={
                 <SecureRoute>
-                  < UserDashboard />
-                </SecureRoute >
+                  <UserDashboard />
+                </SecureRoute>
               } />
               <Route path="/admin/alumni" element={
                 <SecureRoute>
@@ -63,6 +73,11 @@ function App() {
               <Route path="/admin/application" element={<SecureRoute><ApplicationDashboard /></SecureRoute>} />
               <Route path="/admin/settings" element={<SecureRoute><SettingDashboard /></SecureRoute>} />
               <Route path="/admin/user/settings" element={<SecureRoute><SettingDashboard /></SecureRoute>} />
+              <Route path="/admin/certificates" element={
+                <SecureRoute>
+                  <CertificateDashboard />
+                </SecureRoute>
+              } />
               <Route path="/workspace/" element={<Root />} />
 
               {/* Public Auth Pages */}
@@ -71,6 +86,24 @@ function App() {
                 element={
                   <PublicRoute>
                     <Login />
+                  </PublicRoute>
+                }
+              />
+
+              <Route
+                path="/certificate-admin/login"
+                element={
+                  <PublicRoute>
+                    <CertificateAdminLogin />
+                  </PublicRoute>
+                }
+              />
+
+              <Route
+                path="/admin/certificates/login"
+                element={
+                  <PublicRoute>
+                    <CertificateAdminLogin />
                   </PublicRoute>
                 }
               />
@@ -119,18 +152,6 @@ function App() {
                   </PublicRoute>
                 }
               />
-
-              {/* Example Protected Route */}
-              {/* 
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              */}
 
               {/* Catch-all Not Found Route */}
               <Route path="*" element={<NotFound />} />

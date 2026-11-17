@@ -4,6 +4,7 @@ import {
   ClipboardList,
   Settings,
   GraduationCap,
+  Award,
 } from "lucide-react";
 
 const navData = [
@@ -37,6 +38,11 @@ export const adminNav = [
     name: "Applications",
     path: "/admin/application",
     icon: ClipboardList,
+  },
+  {
+    name: "Certificates",
+    path: "/admin/certificates",
+    icon: Award,
   },
 ];
 export default navData;

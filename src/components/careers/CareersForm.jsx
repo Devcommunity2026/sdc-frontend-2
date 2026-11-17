@@ -28,6 +28,7 @@ const CareersForm = ({
   // Resume props
   resumeFile,
   resumeUploading,
+  resumeUploadProgress = 0,
   resumeUploaded,
   resumeError,
   handleResumeFileChange,
@@ -378,16 +379,16 @@ const CareersForm = ({
               onChange={onFileInput}
             />
 
-            {!form.resume ? (
+            {!form.resume || resumeUploading ? (
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={onDrop}
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => !resumeUploading && fileInputRef.current?.click()}
                 className={`
-                  border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200
+                  border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200
                   ${resumeUploading
-                    ? "border-primary/50 bg-primary/5 dark:bg-dark-primary/10"
-                    : "border-border hover:border-primary/60 bg-secondary/30 dark:border-dark-border dark:hover:border-dark-primary/60"
+                    ? "border-primary/50 bg-primary/5 dark:bg-dark-primary/10 cursor-wait"
+                    : "border-border hover:border-primary/60 bg-secondary/30 dark:border-dark-border dark:hover:border-dark-primary/60 cursor-pointer"
                   }
                 `}
               >
@@ -395,10 +396,18 @@ const CareersForm = ({
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <Loader2 size={36} className="animate-spin text-primary dark:text-dark-primary" />
                     <p className="text-sm font-semibold text-foreground dark:text-dark-foreground">
-                      Uploading resume...
+                      Uploading resume... <span className="font-mono text-primary dark:text-dark-primary">{resumeUploadProgress}%</span>
                     </p>
+                    <div className="w-full max-w-xs h-2 rounded-full bg-secondary dark:bg-dark-secondary overflow-hidden">
+                      <div
+                        className="h-full bg-primary dark:bg-dark-primary transition-all duration-200 rounded-full"
+                        style={{ width: `${resumeUploadProgress}%` }}
+                      />
+                    </div>
                     <p className="text-xs text-muted-foreground dark:text-dark-muted-foreground">
-                      Processing your document, please wait...
+                      {resumeUploadProgress >= 95
+                        ? "Finalizing & saving document..."
+                        : "Processing your document, please wait..."}
                     </p>
                   </div>
                 ) : (
